@@ -1,0 +1,4 @@
+org.jsonk.adapters.CollectionAdapterFactory
+org.jsonk.adapters.ArrayAdapterFactory
+org.jsonk.adapters.DateAdapterFactory
+org.jsonk.adapters.DateTimeAdapterFactory
