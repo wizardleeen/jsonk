@@ -1,10 +1,6 @@
 package org.jsonk.mocks;
 
-import org.jsonk.Adapter;
-import org.jsonk.AdapterRegistry;
-import org.jsonk.JsonReader;
-import org.jsonk.JsonWriter;
-import org.jsonk.AdapterKey;
+import org.jsonk.*;
 
 public class IdAdapter implements Adapter<Id> {
     @Override

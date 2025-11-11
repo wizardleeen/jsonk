@@ -55,7 +55,7 @@ public class JsonWriterTest extends TestCase {
 
     private String write(Consumer<JsonWriter> action) {
         var w = new StringWriter();
-        var jw = new JsonWriter(AdapterRegistry.instance, w);
+        var jw = new JsonWriterImpl(AdapterRegistry.instance, w);
         action.accept(jw);
         jw.flush();
         return w.toString();

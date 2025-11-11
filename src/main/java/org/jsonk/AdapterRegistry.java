@@ -3,6 +3,7 @@ package org.jsonk;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 @Slf4j
 public class AdapterRegistry {
@@ -40,6 +41,12 @@ public class AdapterRegistry {
     }
 
     public Adapter<?> getAdapter(Type type, Map<String, Object> attributes) {
+        return getAdapter(type, attributes, () -> {
+            throw new IllegalStateException("No adapter registered for type: " + type + ". Make sure the involved classes are annotated with @Json");
+        });
+    }
+
+    public Adapter<?> getAdapter(Type type, Map<String, Object> attributes, Supplier<Adapter<?>> defaultCreate) {
         var key = new AdapterKey(type, attributes);
         var adapter = adapters.get(key);
         if (adapter != null) {
@@ -48,12 +55,15 @@ public class AdapterRegistry {
         for (AdapterFactory factory : adapterFactories) {
             if (factory.isSupported(type, Map.of())) {
                 var adapter1 = factory.create(type, attributes);
-                adapters.put(key, adapter1);
-                adapter1.init(this);
+                addAdapter(adapter1);
+                initAdapters();
                 return adapter1;
             }
         }
-        throw new IllegalStateException("No adapter registered for type: " + type + ". Make sure the involved classes are annotated with @Json");
+        var adapter2 = defaultCreate.get();
+        addAdapter(adapter2);
+        initAdapters();
+        return adapter2;
     }
 
     void addAdapterFactory(AdapterFactory factory) {

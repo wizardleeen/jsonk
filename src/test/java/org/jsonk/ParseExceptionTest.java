@@ -34,7 +34,7 @@ public class ParseExceptionTest extends TestCase {
     }
 
     private void userFromJson(String json) {
-        Jsonk.fromJson(User.class, json);
+        Jsonk.fromJson(json, User.class);
 
     }
 

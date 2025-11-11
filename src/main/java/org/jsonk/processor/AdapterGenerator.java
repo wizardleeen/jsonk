@@ -1,7 +1,6 @@
 package org.jsonk.processor;
 
-import org.jsonk.util.MinimalPerfectHash;
-import org.jsonk.util.PhfConfig;
+import org.jsonk.util.PerfectHashTable;
 import org.jsonk.util.StringUtil;
 import org.jsonk.util.Util;
 
@@ -28,8 +27,8 @@ class AdapterGenerator extends AbstractGenerator {
     private final Annotations annotations;
     private final Env env;
     private final Map<AdapterKey, String> adapters = new HashMap<>();
-//    private PhfConfig constructorConfig;
-//    private PhfConfig propConfig;
+    private PerfectHashTable mphConfig;
+    private final Map<String, String> charsFields = new HashMap<>();
 
     public AdapterGenerator(TypeElement clazz, Elements elements, Types types, TypesExt typesExt, Introspects introspects, CommonNames commonNames, Annotations annotations, Env env) {
         this.clazz = clazz;
@@ -47,7 +46,7 @@ class AdapterGenerator extends AbstractGenerator {
         var element = clazz;
         var clazz = introspects.introspect(element, env);
         var pkgName = elements.getPackageOf(element).getQualifiedName().toString();
-//        generatePhf(clazz);
+        generatePhf(clazz);
         write("package ").write(pkgName).writeln(";").writeln();
         generateImports();
         write("public class ")
@@ -105,16 +104,16 @@ class AdapterGenerator extends AbstractGenerator {
         env.setCurrentElement(element);
     }
 
-//    private void generatePhf(Clazz clazz) {
-//        if (!clazz.isJavaBean() && !clazz.isPolymorphic()) {
-//            var keys = Util.map(clazz.getConstructorParams(), Parameter::name);
-//            constructorConfig = MinimalPerfectHash.generateConfig(keys);
-//        }
-//        if (clazz.isJavaBean() || !clazz.isRecord()) {
-//            var keys = Util.map(clazz.getProperties(), Field::name);
-//            propConfig = MinimalPerfectHash.generateConfig(keys);
-//        }
-//    }
+    private void generatePhf(Clazz clazz) {
+        if (clazz.getConstructor() != null) {
+            var keys = new LinkedHashSet<>(Util.map(clazz.getConstructorParams(), Parameter::name));
+            for (Property property : clazz.getProperties()) {
+                if (property.getSetter() != null)
+                    keys.add(property.name());
+            }
+            mphConfig = PerfectHashTable.generate(new ArrayList<>(keys));
+        }
+    }
 
     private boolean generateFields(Clazz clazz) {
         var ref = new Object() {
@@ -129,25 +128,66 @@ class AdapterGenerator extends AbstractGenerator {
             write("private Adapter<").write(t).write("> ");
             writeAdapterFieldName(t, attrs).writeln(";");
         });
-//        if (constructorConfig != null)
-//            writePhfField(clazz.getConstructorParams(), "constructorPhf", constructorConfig);
-//        if (propConfig != null)
-//            writePhfField(clazz.getProperties(), "propPhf", propConfig);
+        if (mphConfig != null) {
+            writeln("private static final char[][] keys = new char[][] {");
+            indent();
+            writeList(Arrays.asList(mphConfig.getTable()),
+                        k -> {
+                            if (k != null)
+                                writeCharArray(StringUtil.escape(k), false);
+                            else
+                                write("null");
+                        },
+                        ",\n"
+            );
+            deIndent();
+            writeln("};");
+            write("private static final int[] ordinals = new int[] {")
+                    .writeList(Arrays.stream(mphConfig.getOrdinals()).boxed().toList(),
+                            d -> write(d + ""),
+                            ", "
+                            ).writeln("};");
+            write("private static final long seed = ").write(mphConfig.getSeed() + "").writeln("L;");
+            ref.anyField = true;
+        }
+        var names = new LinkedHashSet<String>();
+        clazz.getTypeNames().forEach(tn -> {
+            names.add(tn.property());
+            names.add(tn.name());
+        });
+        if (clazz.getConstructor() != null)
+            clazz.getConstructorParams().forEach(p -> names.add(p.name()));
+        clazz.getProperties().forEach(p -> names.add(p.name()));
+        for (var name : names) {
+            var fieldName = "chars" + charsFields.size();
+            charsFields.put(name, fieldName);
+            write("private static final char[] ").write(fieldName).write(" = ");
+            writeCharArray(StringUtil.escape(name), true);
+            writeln(";");
+            ref.anyField = true;
+        }
         return ref.anyField;
     }
 
-    private void writePhfField(List<? extends Property> props, String name, PhfConfig config) {
-        write("private final MinimalPerfectHash ").write(name).write(" = new MinimalPerfectHash(")
-                .write("List.of(")
-                .writeList(props, p -> write('"').write(p.name()).write('"'), ", ")
-                .write("), new int[] {")
-                .writeList(Arrays.stream(config.displacements()).boxed().toList(), i -> write(i + ""), ", ")
-                .write("}, ")
-                .write(config.seed1() + "L")
-                .write(", ")
-                .write(config.seed2() + "L")
-                .writeln(");");
+    private AdapterGenerator writeCharArray(String s, boolean withQuotes) {
+        write("new char[] {");
+        if (withQuotes)
+            write("'\"'");
+        for (int i = 0; i < s.length(); i++) {
+            var chars = StringUtil.escapeChar(s.charAt(i));
+            for (int j = 0; j < chars.length(); j++) {
+                if (withQuotes || i > 0 || j > 0)
+                    write(", ");
+                write('\'').write(StringUtil.escapeChar(chars.charAt(j))).write('\'');
+            }
+        }
+        if (withQuotes)
+            write(", '\"'");
+        return (AdapterGenerator) write('}');
+    }
 
+    private String getCharsField(String name) {
+        return Objects.requireNonNull(charsFields.get(name), () -> "chars field not found for: " + name);
     }
 
     private void generateInit(Clazz clazz) {
@@ -263,9 +303,6 @@ class AdapterGenerator extends AbstractGenerator {
         writeln("import org.jsonk.Type;");
         writeln("import org.jsonk.AdapterKey;");
         writeln("import org.jsonk.AdapterRegistry;");
-        writeln("import org.jsonk.util.MinimalPerfectHash;");
-//        writeln("import java.text.DateFormat;");
-//        writeln("import java.time.format.DateTimeFormatter;");
         writeln();
     }
 
@@ -321,7 +358,7 @@ class AdapterGenerator extends AbstractGenerator {
                     first.generateWrite(() -> writeln("first = false;"), this);
                     while (it.hasNext()) {
                         var prop = it.next();
-                        if (prop.isWritable()) {
+                        if (prop.isReadable()) {
                             if (prop.canSkip()) {
                                 prop.generateWrite(() -> writeIfElse(
                                         () -> write("first"),
@@ -342,16 +379,17 @@ class AdapterGenerator extends AbstractGenerator {
                     }, this);
                 while (it.hasNext()) {
                     var prop = it.next();
-                    if (prop.isWritable())
+                    if (prop.isReadable())
                         prop.generateWrite(() -> writeln("writer.writeComma();"), this);
                 }
             }
         } else {
             for (TypeName typeName : clazz.getTypeNames()) {
-                write("writer.writeName(\"").write(typeName.property()).writeln("\");");
-                write("writer.writeString(\"").write(typeName.name()).writeln("\");");
+                write("writer.write(").write(getCharsField(typeName.property())).writeln(");");
+                writeln("writer.writeColon();");
+                write("writer.write(").write(getCharsField(typeName.name())).writeln(");");
             }
-            for (Field prop : clazz.getProperties()) {
+            for (Property prop : clazz.getProperties()) {
                 prop.generateWrite(() -> writeln("writer.writeComma();"), this);
             }
         }
@@ -377,32 +415,11 @@ class AdapterGenerator extends AbstractGenerator {
     private void generateFromJson0(Clazz clazz, String methodName) {
         write("public ").write(clazz).write(" ").write(methodName).writeln("(JsonReader reader) {");
         indent();
-        if (clazz.isJavaBean())
-            generateJavaBeanFromJson(clazz);
-        else if (clazz.isRecord())
-            generateRecordFromJson(clazz);
-        else
-            generateDefaultFromJson(clazz);
+        generateDefaultFromJson(clazz);
         writeln("return o;");
         deIndent();
         writeln("}");
 
-    }
-
-    private void generateJavaBeanFromJson(Clazz clazz) {
-        writeVarDecl("o", () -> write("new ").write(clazz.getName()).write("()"));
-        generateReadProps(clazz);
-    }
-
-    private void generateRecordFromJson(Clazz clazz) {
-        generateConstruction(clazz);
-    }
-
-    private void generateDefaultFromJson(Clazz clazz) {
-        writeln("reader.mark();");
-        generateConstruction(clazz);
-        writeln("reader.rollback();");
-        generateReadProps(clazz);
     }
 
     private void generatePolymorphicFromJson(Clazz clazz) {
@@ -463,23 +480,30 @@ class AdapterGenerator extends AbstractGenerator {
         return this;
     }
 
-    private void generateConstruction(Clazz clazz) {
-        var variables = new HashMap<Parameter, String>();
+    private void generateDefaultFromJson(Clazz clazz) {
+        var variables = new HashMap<String, String>();
+        var paramNames = Util.mapToSet(clazz.getConstructorParams(), Parameter::name);
         for (var param : clazz.getConstructorParams()) {
             var v = nextVariable();
-            write(param.type().toString()).write(" ").write(v).write(" = ")
-                    .write(getInitialValue(param.type())).writeln(";");
-            variables.put(param, v);
+            generateVariableDecl(param, v);
+            variables.put(param.name(), v);
+        }
+        for (Property property : clazz.getProperties()) {
+            if (paramNames.contains(property.name()) || !property.isWritable())
+                continue;
+            var v = nextVariable();
+            generateVariableDecl(property, v);
+            variables.put(property.name(), v);
         }
         writeln("reader.accept('{');");
         writeln("do {");
         indent();
-//        var phf = Objects.requireNonNull(constructorConfig).createPhf();
+        var ph = Objects.requireNonNull(mphConfig);
         write("""
                  reader.skipWhitespace();
                 if (reader.is('}'))
                     break;
-                var name = reader.readString();
+                var name = reader.readName(keys, ordinals, seed);
                 reader.skipWhitespace();
                 reader.accept(':');
                 reader.skipWhitespace();
@@ -487,10 +511,19 @@ class AdapterGenerator extends AbstractGenerator {
                 """);
         indent();
         for (var param : clazz.getConstructorParams()) {
-//            write("case ").write(phf.get(param.name())).write(" -> ");
-            write("case \"").write(param.name()).write("\" -> ");
-            write(variables.get(param)).write(" = ");
+            write("case ").write(ph.get(param.name())).write(" -> ");
+//            write("case \"").write(param.name()).write("\" -> ");
+            write(variables.get(param.name())).write(" = ");
             generateRead(param.type(), param.getAttributes());
+            writeln(";");
+        }
+        for (Property property : clazz.getProperties()) {
+            if (paramNames.contains(property.name()) || !property.isWritable())
+                continue;
+            write("case ").write(ph.get(property.name())).write(" -> ");
+//            write("case \"").write(property.name()).write("\" -> ");
+            write(variables.get(property.name())).write(" = ");
+            generateRead(property.type(), property.getAttributes());
             writeln(";");
         }
         writeln("default -> reader.skipValue();");
@@ -502,9 +535,19 @@ class AdapterGenerator extends AbstractGenerator {
         writeln("reader.accept('}');");
         writeVarDecl("o", () -> {
             write("new ").write(clazz.getElement().getSimpleName()).write("(");
-            writeList(clazz.getConstructorParams(), p -> write(variables.get(p)), ", ");
+            writeList(clazz.getConstructorParams(), p -> write(variables.get(p.name())), ", ");
             write(")");
         });
+        for (Property property : clazz.getProperties()) {
+            if (paramNames.contains(property.name()) || !property.isWritable())
+                continue;
+            property.generateRead(variables.get(property.name()), this);
+        }
+    }
+
+    private void generateVariableDecl(Variable variable, String name) {
+        write(variable.type()).write(" ").write(name).write(" = ")
+                .write(getInitialValue(variable.type())).writeln(";");
     }
 
     private void generateReadProps(Clazz clazz) {
@@ -525,7 +568,7 @@ class AdapterGenerator extends AbstractGenerator {
         indent();
 //        var phf = Objects.requireNonNull(propConfig).createPhf();
         for (var prop : clazz.getProperties()) {
-            if (ignoredPropNames.contains(prop.name()) || !prop.isReadable())
+            if (ignoredPropNames.contains(prop.name()) || !prop.isWritable())
                 continue;
 //            write("case ").write(phf.get(prop.name())).write(" -> ");
             write("case \"").write(prop.name()).write("\" -> ");
@@ -642,7 +685,8 @@ class AdapterGenerator extends AbstractGenerator {
     }
 
     void generateWriteName(String name) {
-        write("writer.writeName(\"").write(name).writeln("\");");
+        write("writer.write(").write(getCharsField(name)).writeln(");");
+        writeln("writer.writeColon();");
     }
 
     private record AdapterKey(Type type, Map<String, Object> attributes) {

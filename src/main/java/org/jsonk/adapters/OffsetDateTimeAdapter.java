@@ -3,7 +3,6 @@ package org.jsonk.adapters;
 import org.jsonk.*;
 import org.jsonk.Type;
 
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 

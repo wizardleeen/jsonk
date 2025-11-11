@@ -8,11 +8,24 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class OrderItemAdapter implements Adapter<org.jsonk.mocks.OrderItem> {
 
     private Adapter<java.lang.String> adapter0;
+    private static final char[][] keys = new char[][] {
+        null,
+        new char[] {'p', 'r', 'i', 'c', 'e'},
+        null,
+        null,
+        null,
+        null,
+        new char[] {'q', 'u', 'a', 'n', 't', 'i', 't', 'y'},
+        new char[] {'p', 'r', 'o', 'd', 'u', 'c', 't', 'I', 'd'}};
+    private static final int[] ordinals = new int[] {-1, 2, -1, -1, -1, -1, 1, 0};
+    private static final long seed = -622385821379361571L;
+    private static final char[] chars0 = new char[] {'"', 'p', 'r', 'o', 'd', 'u', 'c', 't', 'I', 'd', '"'};
+    private static final char[] chars1 = new char[] {'"', 'q', 'u', 'a', 'n', 't', 'i', 't', 'y', '"'};
+    private static final char[] chars2 = new char[] {'"', 'p', 'r', 'i', 'c', 'e', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -26,16 +39,19 @@ public class OrderItemAdapter implements Adapter<org.jsonk.mocks.OrderItem> {
         var v0 = o.productId();
         if (v0 != null) {
             first = false;
-            writer.writeName("productId");
+            writer.write(chars0);
+            writer.writeColon();
             writer.writeString(v0);
         }
         if (!first) {
             writer.writeComma();
         }
-        writer.writeName("quantity");
+        writer.write(chars1);
+        writer.writeColon();
         writer.writeInt(o.quantity());
         writer.writeComma();
-        writer.writeName("price");
+        writer.write(chars2);
+        writer.writeColon();
         writer.writeLong(o.price());
         writer.writeRBrace();
     }
@@ -50,14 +66,14 @@ public class OrderItemAdapter implements Adapter<org.jsonk.mocks.OrderItem> {
              reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
             switch(name) {
-                case "productId" -> v1 = reader.readStringOrNull();
-                case "quantity" -> v2 = reader.readInt();
-                case "price" -> v3 = reader.readLong();
+                case 0 -> v1 = reader.readStringOrNull();
+                case 1 -> v2 = reader.readInt();
+                case 2 -> v3 = reader.readLong();
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();

@@ -199,8 +199,6 @@ public class ElementFactory {
                 MockName.of(param.getName()),
                 buildType(param.getParameterizedType())
         );
-        if (param.getName().equals("isAbstract"))
-            System.out.println("Caught");
         setAnnotations(e, param);
         return e;
     }

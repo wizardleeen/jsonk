@@ -91,6 +91,11 @@ public class AdapterGeneratorTest extends TestCase {
         generate(Item.class);
     }
 
+    public void testNestedConstruction() {
+        generate(Material.class);
+        generate(BOM.class);
+    }
+
     @SneakyThrows
     private String generateWithoutSave(Class<?> clazz) {
         var code = createGenerator(ElementFactory.instance.buildClass(clazz)).generate();

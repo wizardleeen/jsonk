@@ -19,8 +19,10 @@ public abstract class CollectionAdapter<E, C extends Collection<E>> implements A
 
     @Override
     public void init(AdapterRegistry registry) {
+        var elementType = type.typeArguments().isEmpty() ?
+                Type.from(Object.class) : type.typeArguments().getFirst();
         //noinspection unchecked
-        elementAdapter = (Adapter<E>) registry.getAdapter(type.typeArguments().getFirst(), attributes);
+        elementAdapter = (Adapter<E>) registry.getAdapter(elementType, attributes);
     }
 
     @Override

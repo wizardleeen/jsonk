@@ -22,8 +22,8 @@ public class ClazzTest extends TestCase {
         );
         var clazz = introspects.introspect(cls, new Env());
         log.debug("Fields:");
-        for (Field field : clazz.getProperties()) {
-            log.debug("{}: {}", field.name(), field.type());
+        for (Property property : clazz.getProperties()) {
+            log.debug("{}: {}", property.name(), property.getType());
         }
         clazz.forEachReferenceType((t, attrs) -> {
             System.out.println(t);

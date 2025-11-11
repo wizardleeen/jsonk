@@ -9,7 +9,7 @@ public record Parameter(
         Element element,
         TypeMirror type,
         PropertyConfig propertyConfig
-) implements Property {
+) implements Variable {
 
     public String getDateTimeFormat() {
         return propertyConfig.dateTimeFormat();

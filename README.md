@@ -80,7 +80,7 @@ To convert a JSON string back into an object, simply provide the target class an
 ```java
 var json = "{\"id\":2,\"name\":\"Jane Doe\"}";
 
-var user = Jsonk.fromJson(User.class, json);
+var user = Jsonk.fromJson(json, User.class);
 
 System.out.println(user.getName()); // Output: Jane Doe
 ```

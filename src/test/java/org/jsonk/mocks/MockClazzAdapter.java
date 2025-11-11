@@ -8,9 +8,15 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class MockClazzAdapter implements Adapter<org.jsonk.mocks.MockClazz> {
+
+    private static final char[][] keys = new char[][] {
+        new char[] {'a', 'b', 's', 't', 'r', 'a', 'c', 't'},
+        null};
+    private static final int[] ordinals = new int[] {0, -1};
+    private static final long seed = -4904386468386775572L;
+    private static final char[] chars0 = new char[] {'"', 'a', 'b', 's', 't', 'r', 'a', 'c', 't', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -19,7 +25,8 @@ public class MockClazzAdapter implements Adapter<org.jsonk.mocks.MockClazz> {
     @Override
     public void toJson(org.jsonk.mocks.MockClazz o, JsonWriter writer) {
         writer.writeLBrace();
-        writer.writeName("abstract");
+        writer.write(chars0);
+        writer.writeColon();
         writer.writeBoolean(o.isAbstract());
         writer.writeRBrace();
     }
@@ -32,12 +39,12 @@ public class MockClazzAdapter implements Adapter<org.jsonk.mocks.MockClazz> {
              reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
             switch(name) {
-                case "abstract" -> v0 = reader.readBoolean();
+                case 0 -> v0 = reader.readBoolean();
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();

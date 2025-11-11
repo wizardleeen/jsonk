@@ -66,7 +66,7 @@ public class JsonkProcessor extends AbstractProcessor {
             generateMapping(classes);
             generateFactoryMapping(classes);
         }
-        if (!roundEnv.processingOver()) {
+        if (roundEnv.processingOver()) {
             for (Element rootElement : roundEnv.getRootElements()) {
                 var path = trees.getPath(rootElement);
                 scanner.scan(path, null);

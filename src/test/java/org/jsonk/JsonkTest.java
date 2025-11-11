@@ -31,7 +31,7 @@ public class JsonkTest extends TestCase {
         );
         var json = Jsonk.toJson(user);
         log.info("\n{}", json);
-        var user1 = Jsonk.fromJson(User.class, new StringReader(json));
+        var user1 = Jsonk.fromJson(new StringReader(json), User.class);
         log.info("\n{}", user1);
         assertEquals(user, user1);
     }
@@ -54,7 +54,7 @@ public class JsonkTest extends TestCase {
         ));
         var json = Jsonk.toJson(order);
         log.info("\n{}", json);
-        var order1 = Jsonk.fromJson(Order.class, json);
+        var order1 = Jsonk.fromJson(json, Order.class);
         assertEquals(order, order1);
     }
 
@@ -70,7 +70,7 @@ public class JsonkTest extends TestCase {
         var order = new Order(items);
         var json = Jsonk.toJson(order);
 //        log.info("\n{}", json);
-        var order1 = Jsonk.fromJson(Order.class, json);
+        var order1 = Jsonk.fromJson(json, Order.class);
         assertEquals(order, order1);
     }
 
@@ -83,14 +83,14 @@ public class JsonkTest extends TestCase {
         registry.initAdapters();
         var arrayType = new ArrayType(new ClassType("Foo"));
         var json = Jsonk.toJson(arrayType);
-        assertEquals(arrayType, Jsonk.fromJson(org.jsonk.mocks.Type.class, json));
+        assertEquals(arrayType, Jsonk.fromJson(json, org.jsonk.mocks.Type.class));
         var json1 = """
                 {
                     "kind": "int",
                     "type": "primitive",
                 }
                 """;
-        assertEquals(new PrimitiveType("int"), Jsonk.fromJson(Type.class, json1));
+        assertEquals(new PrimitiveType("int"), Jsonk.fromJson(json1, Type.class));
     }
 
     public void testExistingDiscriminator() {
@@ -113,7 +113,7 @@ public class JsonkTest extends TestCase {
         product.setStock(100);
         var json = Jsonk.toJson(product);
         log.debug("\n{}", json);
-        var product1 = Jsonk.fromJson(Product.class, json);
+        var product1 = Jsonk.fromJson(json, Product.class);
         assertEquals(product, product1);
     }
 
@@ -127,7 +127,7 @@ public class JsonkTest extends TestCase {
         ));
         var json = Jsonk.toJson(order, Option.create().indent());
         log.debug("\n{}", json);
-        var order1 = Jsonk.fromJson(Order.class, json);
+        var order1 = Jsonk.fromJson(json, Order.class);
         assertEquals(order, order1);
     }
 
@@ -137,7 +137,7 @@ public class JsonkTest extends TestCase {
         var clazz = new MockClazz(true);
         var json = Jsonk.toJson(clazz);
         log.debug("\n{}", json);
-        var clazz1 = Jsonk.fromJson(MockClazz.class, json);
+        var clazz1 = Jsonk.fromJson(json, MockClazz.class);
         assertEquals(clazz, clazz1);
     }
 
@@ -147,7 +147,7 @@ public class JsonkTest extends TestCase {
                     "name": "Jsonk"
                 }
                 """;
-        var map = Jsonk.fromJson(Map.class, json);
+        var map = Jsonk.fromJson(json, Map.class);
         assertEquals(Map.of("name", "Jsonk"), map);
     }
 
@@ -161,7 +161,7 @@ public class JsonkTest extends TestCase {
         );
         var json = Jsonk.toJson(foo);
         log.debug("\n{}", json);
-        var foo1 = Jsonk.fromJson(LocalDateTimeFoo.class, json);
+        var foo1 = Jsonk.fromJson(json, LocalDateTimeFoo.class);
         assertEquals(foo, foo1);
     }
 
@@ -171,20 +171,8 @@ public class JsonkTest extends TestCase {
         registry.initAdapters();
         var foo = new ArrayFoo(new String[] {"t1", "t2", "t3"});
         var json = Jsonk.toJson(foo);
-        var foo1 = Jsonk.fromJson(ArrayFoo.class, json);
+        var foo1 = Jsonk.fromJson(json, ArrayFoo.class);
         assertEquals(foo, foo1);
-    }
-
-    public void testCyclicRef() {
-        register(new CyclicRefFooAdapter());
-        var foo = new CyclicRefFoo();
-        foo.setValue(foo);
-        try {
-            Jsonk.toJson(foo);
-            fail("Should have failed");
-        } catch (JsonWriteException e) {
-            assertTrue(e.getMessage().startsWith("Cyclic reference detected"));
-        }
     }
 
     public void testGeneric() {
@@ -193,8 +181,36 @@ public class JsonkTest extends TestCase {
         var item = new Item<>("jsonk");
         var json = Jsonk.toJson(item);
         log.debug(json);
-        var item1 = Jsonk.fromJson(org.jsonk.Type.from(Item.class, String.class), json);
+        var item1 = Jsonk.fromJson(json, org.jsonk.Type.from(Item.class, String.class));
         assertEquals(item, item1);
+    }
+
+    public void testNestedConstruction() {
+        var reg = AdapterRegistry.instance;
+        reg.addAdapter(new MaterialAdapter());
+        reg.addAdapter(new BOMAdapter());
+        reg.initAdapters();
+        var material = new Material("Steel");
+        material.setAmount(1);
+        var bom = new BOM(material);
+        bom.setVersion(1);
+        var json = Jsonk.toJson(bom);
+        var bom1 = Jsonk.fromJson(json, BOM.class);
+        assertEquals(bom, bom1);
+    }
+
+    public void testUnmodifiableMap() {
+        var map = Map.of("name", "leen");
+        var json = Jsonk.toJson(map);
+        var map1 = Jsonk.fromJson(json, org.jsonk.Type.from(Map.class, String.class, String.class));
+        assertEquals(map1, map);
+    }
+
+    public void testImmutableLit() {
+        var list = List.of(1, 2, 3);
+        var json = Jsonk.toJson(list);
+        var list1 = Jsonk.fromJson(json, org.jsonk.Type.from(List.class, Integer.class));
+        assertEquals(list, list1);
     }
 
     private void register(Adapter<?>...adapters) {

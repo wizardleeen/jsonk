@@ -9,41 +9,48 @@ import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
 
-public class ItemAdapter<T> implements Adapter<org.jsonk.mocks.Item<T>> {
+public class BOMAdapter implements Adapter<org.jsonk.mocks.BOM> {
 
-    private final Type type;
-    private Adapter<T> adapter0;
+    private Adapter<org.jsonk.mocks.Material> adapter0;
     private static final char[][] keys = new char[][] {
+        new char[] {'v', 'e', 'r', 's', 'i', 'o', 'n'},
         null,
-        new char[] {'v', 'a', 'l', 'u', 'e'}};
-    private static final int[] ordinals = new int[] {-1, 0};
-    private static final long seed = -5532191474317929232L;
-    private static final char[] chars0 = new char[] {'"', 'v', 'a', 'l', 'u', 'e', '"'};
-
-    public ItemAdapter(Type type) {
-        this.type = type;
-    }
+        null,
+        new char[] {'p', 'r', 'o', 'd', 'u', 'c', 't'}};
+    private static final int[] ordinals = new int[] {1, -1, -1, 0};
+    private static final long seed = 6381830176811159538L;
+    private static final char[] chars0 = new char[] {'"', 'p', 'r', 'o', 'd', 'u', 'c', 't', '"'};
+    private static final char[] chars1 = new char[] {'"', 'v', 'e', 'r', 's', 'i', 'o', 'n', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
-        adapter0 = (Adapter) registry.getAdapter(type.typeArguments().get(0));
+        adapter0 = registry.getAdapter(org.jsonk.mocks.Material.class);
     }
 
     @Override
-    public void toJson(org.jsonk.mocks.Item<T> o, JsonWriter writer) {
+    public void toJson(org.jsonk.mocks.BOM o, JsonWriter writer) {
         writer.writeLBrace();
-        var v0 = o.value();
+        var first = true;
+        var v0 = o.getProduct();
         if (v0 != null) {
+            first = false;
             writer.write(chars0);
             writer.writeColon();
             writer.writeObject(v0, adapter0);
         }
+        if (!first) {
+            writer.writeComma();
+        }
+        writer.write(chars1);
+        writer.writeColon();
+        writer.writeLong(o.getVersion());
         writer.writeRBrace();
     }
 
     @Override
-    public org.jsonk.mocks.Item<T> fromJson(JsonReader reader) {
-        T v1 = null;
+    public org.jsonk.mocks.BOM fromJson(JsonReader reader) {
+        org.jsonk.mocks.Material v1 = null;
+        long v2 = 0;
         reader.accept('{');
         do {
              reader.skipWhitespace();
@@ -55,18 +62,20 @@ public class ItemAdapter<T> implements Adapter<org.jsonk.mocks.Item<T>> {
             reader.skipWhitespace();
             switch(name) {
                 case 0 -> v1 = reader.readObject(adapter0);
+                case 1 -> v2 = reader.readLong();
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();
         } while (reader.skip(','));
         reader.accept('}');
-        var o = new Item(v1);
+        var o = new BOM(v1);
+        o.setVersion(v2);
         return o;
     }
 
     @Override
     public AdapterKey getKey() {
-        return AdapterKey.of(type);
+        return AdapterKey.of(org.jsonk.mocks.BOM.class);
     }
 
 }

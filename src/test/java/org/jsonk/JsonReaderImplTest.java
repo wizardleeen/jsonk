@@ -1,11 +1,16 @@
 package org.jsonk;
 
 import junit.framework.TestCase;
+import lombok.extern.slf4j.Slf4j;
+import org.jsonk.util.PerfectHashTable;
+import org.jsonk.util.StringUtil;
 
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.List;
 
-/** @noinspection resource*/
-public class JsonReaderTest extends TestCase {
+@Slf4j
+public class JsonReaderImplTest extends TestCase {
 
     public void testReadByte() {
         assertEquals((byte) 100, createReader("100").readByte());
@@ -94,8 +99,43 @@ public class JsonReaderTest extends TestCase {
         assertEquals("Jsonk", r.readString());
     }
 
+    public void testReadIntOverflow() {
+        var r = createReader("-2147483649");
+        try {
+            r.readInt();
+            fail("Should have failed");
+        } catch (JsonParseException e) {
+            assertEquals("Integer value out of range. line: 1, column: 1", e.getMessage());
+        }
+    }
+
+    public void testReadLongOverflow() {
+        var r = createReader("-9223372036854775809");
+        try {
+            r.readLong();
+            fail("Should have failed");
+        } catch (JsonParseException e) {
+            assertEquals("Integer value out of range. line: 1, column: 1", e.getMessage());
+        }
+    }
+
+    public void testReadName() {
+        var names = List.of("id", "name", "activated", "roles", "jsonk\n");
+        var ph = PerfectHashTable.generate(names);
+        System.out.println(Arrays.toString(ph.getTable()));
+        for (String s : names) {
+            var index = ph.get(s);
+            var r = createReader("\"" + StringUtil.escape(s) + "\"");
+            var readIndex = r.readName(ph.keyCharArrays(), ph.getOrdinals(), ph.getSeed());
+            assertEquals("Index not match for name: " + s, index, readIndex);
+        }
+        var r = createReader("\"nonExistent\"");
+        var nameIndex = r.readName(ph.keyCharArrays(), ph.getOrdinals(), ph.getSeed());
+        assertEquals(-1, nameIndex);
+    }
+
     private JsonReader createReader(String text) {
-        return new JsonReader(new StringReader(text));
+        return new JsonReaderImpl(new StringReader(text));
     }
 
 }

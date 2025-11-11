@@ -8,11 +8,16 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class CyclicRefFooAdapter implements Adapter<org.jsonk.mocks.CyclicRefFoo> {
 
     private Adapter<java.lang.Object> adapter0;
+    private static final char[][] keys = new char[][] {
+        new char[] {'v', 'a', 'l', 'u', 'e'},
+        null};
+    private static final int[] ordinals = new int[] {0, -1};
+    private static final long seed = -5542535026285684763L;
+    private static final char[] chars0 = new char[] {'"', 'v', 'a', 'l', 'u', 'e', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -24,7 +29,8 @@ public class CyclicRefFooAdapter implements Adapter<org.jsonk.mocks.CyclicRefFoo
         writer.writeLBrace();
         var v0 = o.getValue();
         if (v0 != null) {
-            writer.writeName("value");
+            writer.write(chars0);
+            writer.writeColon();
             writer.writeObject(v0, adapter0);
         }
         writer.writeRBrace();
@@ -32,23 +38,25 @@ public class CyclicRefFooAdapter implements Adapter<org.jsonk.mocks.CyclicRefFoo
 
     @Override
     public org.jsonk.mocks.CyclicRefFoo fromJson(JsonReader reader) {
-        var o = new CyclicRefFoo();
+        java.lang.Object v1 = null;
         reader.accept('{');
         do {
-            reader.skipWhitespace();
+             reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
             switch(name) {
-                case "value" -> o.setValue(reader.readObject(adapter0));
+                case 0 -> v1 = reader.readObject(adapter0);
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();
         } while (reader.skip(','));
         reader.accept('}');
+        var o = new CyclicRefFoo();
+        o.setValue(v1);
         return o;
     }
 

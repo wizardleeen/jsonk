@@ -1,6 +1,6 @@
-package org.jsonk.util;
+package org.jsonk;
 
-public class Chars {
+class Chars {
 
     public static final char[] TRUE = new char[] {'t', 'r', 'u', 'e'};
 

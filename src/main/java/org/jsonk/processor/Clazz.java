@@ -18,16 +18,17 @@ final class Clazz {
     private final TypesExt typesExt;
     @Getter
     private final TypeElement element;
+    @Getter
     private final @Nullable Constructor constructor;
     @Getter
-    private final List<Field> properties;
+    private final List<Property> properties;
     private final AnnotationMirror annotation;
     private final List<TypeName> typeNames;
 
     Clazz(
             Annotations annotations, TypesExt typesExt, TypeElement element,
             Constructor constructor,
-            Collection<Field> properties,
+            Collection<Property> properties,
             AnnotationMirror annotation,
             Collection<TypeName> typeNames
     ) {
@@ -84,7 +85,7 @@ final class Clazz {
     Type getTypePropertyType() {
         var d = getTypeProperty();
         if (d != null)
-            return Util.findRequired(properties, p -> p.name().equals(d)).type();
+            return Util.findRequired(properties, p -> p.name().equals(d)).getType();
         else
             throw new IllegalStateException("Not a polymorphic type");
     }
@@ -97,17 +98,17 @@ final class Clazz {
 
     int numWritableProps() {
         var cnt = 0;
-        for (Field field : properties) {
-            if (field.isWritable())
+        for (Property property : properties) {
+            if (property.isReadable())
                 cnt++;
         }
         return cnt;
     }
 
-    Field firstWritableProp() {
-        for (Field field : properties) {
-            if (field.isWritable())
-                return field;
+    Property firstWritableProp() {
+        for (Property property : properties) {
+            if (property.isReadable())
+                return property;
         }
         throw new NoSuchElementException();
     }
@@ -115,9 +116,9 @@ final class Clazz {
     void forEachReferenceType(BiConsumer<Type, Map<String, Object>> action) {
         var visited = new HashSet<List<?>>();
         visited.add(List.of(Type.from(element.asType()), Map.of()));
-        for (Field prop : properties) {
+        for (Property prop : properties) {
             var df = prop.getDateTimeFormat();
-            var type = prop.type();
+            var type = prop.getType();
             Map<String, Object> attrs = df != null ? Map.of("dateFormat", df) : Map.of();
             if (type instanceof ClassType ct && ct.element().getKind() != ElementKind.ENUM
                     || type instanceof ArrayType || type instanceof TypeVariable) {

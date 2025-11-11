@@ -3,7 +3,7 @@ package org.jsonk;
 import java.io.Writer;
 import java.util.function.Consumer;
 
-public class IndentJsonWriter extends JsonWriter {
+class IndentJsonWriter extends JsonWriterImpl {
 
     private int indents;
     private boolean newLine;
@@ -59,12 +59,6 @@ public class IndentJsonWriter extends JsonWriter {
     private void writeln() {
         write('\n');
         newLine = true;
-    }
-
-    @Override
-    public void writeName(String name) {
-        writeIndents();
-        super.writeName(name);
     }
 
     @Override

@@ -1,0 +1,16 @@
+org.jsonk.mocks.UserAdapter
+org.jsonk.mocks.RoleAdapter
+org.jsonk.mocks.ArrayFooAdapter
+org.jsonk.mocks.TypeAdapter
+org.jsonk.mocks.PrimitiveTypeAdapter
+org.jsonk.mocks.ClassTypeAdapter
+org.jsonk.mocks.ArrayTypeAdapter
+org.jsonk.mocks.BOMAdapter
+org.jsonk.mocks.MaterialAdapter
+org.jsonk.mocks.CyclicRefFooAdapter
+org.jsonk.mocks.IdAdapter
+org.jsonk.mocks.LocalDateTimeFooAdapter
+org.jsonk.mocks.MockClazzAdapter
+org.jsonk.mocks.OrderAdapter
+org.jsonk.mocks.OrderItemAdapter
+org.jsonk.mocks.ProductAdapter

@@ -8,7 +8,6 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class TypeAdapter implements Adapter<org.jsonk.mocks.Type> {
 
@@ -16,6 +15,7 @@ public class TypeAdapter implements Adapter<org.jsonk.mocks.Type> {
     private Adapter<org.jsonk.mocks.ClassType> adapter1;
     private Adapter<org.jsonk.mocks.PrimitiveType> adapter2;
     private Adapter<org.jsonk.mocks.ArrayType> adapter3;
+    private static final char[] chars0 = new char[] {'"', 't', 'y', 'p', 'e', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {

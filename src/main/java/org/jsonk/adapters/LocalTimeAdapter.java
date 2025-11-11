@@ -3,7 +3,6 @@ package org.jsonk.adapters;
 import org.jsonk.*;
 
 import java.time.LocalTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class LocalTimeAdapter implements Adapter<LocalTime>  {

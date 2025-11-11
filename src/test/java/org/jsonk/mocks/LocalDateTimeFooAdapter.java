@@ -8,12 +8,20 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class LocalDateTimeFooAdapter implements Adapter<org.jsonk.mocks.LocalDateTimeFoo> {
 
     private Adapter<java.time.LocalDateTime> adapter0;
     private Adapter<java.time.LocalDateTime> adapter1;
+    private static final char[][] keys = new char[][] {
+        null,
+        new char[] {'t', 'i', 'm', 'e'},
+        null,
+        new char[] {'t', 'i', 'm', 'e', '1'}};
+    private static final int[] ordinals = new int[] {-1, 0, -1, 1};
+    private static final long seed = -1392896483960742256L;
+    private static final char[] chars0 = new char[] {'"', 't', 'i', 'm', 'e', '"'};
+    private static final char[] chars1 = new char[] {'"', 't', 'i', 'm', 'e', '1', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -31,7 +39,8 @@ public class LocalDateTimeFooAdapter implements Adapter<org.jsonk.mocks.LocalDat
         var v0 = o.time();
         if (v0 != null) {
             first = false;
-            writer.writeName("time");
+            writer.write(chars0);
+            writer.writeColon();
             writer.writeValue(v0, adapter0);
         }
         var v1 = o.time1();
@@ -41,7 +50,8 @@ public class LocalDateTimeFooAdapter implements Adapter<org.jsonk.mocks.LocalDat
             } else {
                 writer.writeComma();
             }
-            writer.writeName("time1");
+            writer.write(chars1);
+            writer.writeColon();
             writer.writeValue(v1, adapter1);
         }
         writer.writeRBrace();
@@ -56,13 +66,13 @@ public class LocalDateTimeFooAdapter implements Adapter<org.jsonk.mocks.LocalDat
              reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
             switch(name) {
-                case "time" -> v2 = reader.readObject(adapter0);
-                case "time1" -> v3 = reader.readObject(adapter1);
+                case 0 -> v2 = reader.readObject(adapter0);
+                case 1 -> v3 = reader.readObject(adapter1);
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();

@@ -8,11 +8,16 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class OrderAdapter implements Adapter<org.jsonk.mocks.Order> {
 
     private Adapter<java.util.List<org.jsonk.mocks.OrderItem>> adapter0;
+    private static final char[][] keys = new char[][] {
+        null,
+        new char[] {'i', 't', 'e', 'm', 's'}};
+    private static final int[] ordinals = new int[] {-1, 0};
+    private static final long seed = 3835353032691092054L;
+    private static final char[] chars0 = new char[] {'"', 'i', 't', 'e', 'm', 's', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -24,7 +29,8 @@ public class OrderAdapter implements Adapter<org.jsonk.mocks.Order> {
         writer.writeLBrace();
         var v0 = o.items();
         if (v0 != null) {
-            writer.writeName("items");
+            writer.write(chars0);
+            writer.writeColon();
             writer.writeObject(v0, adapter0);
         }
         writer.writeRBrace();
@@ -38,12 +44,12 @@ public class OrderAdapter implements Adapter<org.jsonk.mocks.Order> {
              reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
             switch(name) {
-                case "items" -> v1 = reader.readObject(adapter0);
+                case 0 -> v1 = reader.readObject(adapter0);
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();

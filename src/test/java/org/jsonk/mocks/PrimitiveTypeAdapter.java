@@ -8,11 +8,18 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class PrimitiveTypeAdapter implements Adapter<org.jsonk.mocks.PrimitiveType> {
 
     private Adapter<java.lang.String> adapter0;
+    private static final char[][] keys = new char[][] {
+        null,
+        new char[] {'k', 'i', 'n', 'd'}};
+    private static final int[] ordinals = new int[] {-1, 0};
+    private static final long seed = 4323861132194585665L;
+    private static final char[] chars0 = new char[] {'"', 't', 'y', 'p', 'e', '"'};
+    private static final char[] chars1 = new char[] {'"', 'p', 'r', 'i', 'm', 'i', 't', 'i', 'v', 'e', '"'};
+    private static final char[] chars2 = new char[] {'"', 'k', 'i', 'n', 'd', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -22,12 +29,14 @@ public class PrimitiveTypeAdapter implements Adapter<org.jsonk.mocks.PrimitiveTy
     @Override
     public void toJson(org.jsonk.mocks.PrimitiveType o, JsonWriter writer) {
         writer.writeLBrace();
-        writer.writeName("type");
-        writer.writeString("primitive");
+        writer.write(chars0);
+        writer.writeColon();
+        writer.write(chars1);
         var v0 = o.kind();
         if (v0 != null) {
             writer.writeComma();
-            writer.writeName("kind");
+            writer.write(chars2);
+            writer.writeColon();
             writer.writeString(v0);
         }
         writer.writeRBrace();
@@ -41,12 +50,12 @@ public class PrimitiveTypeAdapter implements Adapter<org.jsonk.mocks.PrimitiveTy
              reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
             switch(name) {
-                case "kind" -> v1 = reader.readStringOrNull();
+                case 0 -> v1 = reader.readStringOrNull();
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();

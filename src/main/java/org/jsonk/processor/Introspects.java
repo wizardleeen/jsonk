@@ -26,7 +26,7 @@ class Introspects {
     Clazz introspect(TypeElement element, Env env) {
         var record = element.getKind() == ElementKind.RECORD;
         Constructor constructor = null;
-        var props = new LinkedHashMap<String, Field>();
+        var props = new LinkedHashMap<String, Property>();
         Set<ExecutableElement> recordAccessors = record ? new HashSet<>() : Set.of();
         var typeNames = getTypeNames(element, env);
         var typeNameSet = Util.mapToSet(typeNames, TypeName::property);
@@ -117,9 +117,9 @@ class Introspects {
         );
     }
 
-    private void checkPropertyType(Field field) {
-        env.setCurrentElement(field.getMainElement());
-        var type = field.getValueType();
+    private void checkPropertyType(Property property) {
+        env.setCurrentElement(property.getMainElement());
+        var type = property.getValueType();
         if (type instanceof PrimitiveType)
             return;
         if (type instanceof ClassType ct) {
@@ -129,11 +129,11 @@ class Introspects {
             if (annotations.isAnnotationPresent(clazz, commonNames.classJson))
                 return;
         }
-        env.addError("Missing annotation @Json on '" + field.getValueType() + "'");
+        env.addError("Missing annotation @Json on '" + property.getValueType() + "'");
     }
 
-    private Field createProperty(String name) {
-        return new Field(annotations, commonNames, typesExt, name, env);
+    private Property createProperty(String name) {
+        return new Property(annotations, commonNames, typesExt, name, env);
     }
 
     private Constructor buildConstructor(ExecutableElement method) {

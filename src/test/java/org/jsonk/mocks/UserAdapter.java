@@ -8,12 +8,36 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
 
     private Adapter<java.lang.String> adapter0;
     private Adapter<java.util.Map<java.lang.String,java.lang.Object>> adapter1;
+    private static final char[][] keys = new char[][] {
+        null,
+        new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'},
+        null,
+        new char[] {'c', 'r', 'e', 'a', 't', 'o', 'r'},
+        null,
+        new char[] {'a', 'c', 't', 'i', 'v', 'a', 't', 'e', 'd'},
+        new char[] {'a', 't', 't', 'r', 'i', 'b', 'u', 't', 'e', 's'},
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        new char[] {'n', 'a', 'm', 'e'},
+        new char[] {'k', 'i', 'n', 'd'},
+        null};
+    private static final int[] ordinals = new int[] {-1, 2, -1, 4, -1, 3, 5, -1, -1, -1, -1, -1, -1, 0, 1, -1};
+    private static final long seed = 6931712918601522444L;
+    private static final char[] chars0 = new char[] {'"', 'n', 'a', 'm', 'e', '"'};
+    private static final char[] chars1 = new char[] {'"', 'k', 'i', 'n', 'd', '"'};
+    private static final char[] chars2 = new char[] {'"', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', '"'};
+    private static final char[] chars3 = new char[] {'"', 'a', 'c', 't', 'i', 'v', 'a', 't', 'e', 'd', '"'};
+    private static final char[] chars4 = new char[] {'"', 'c', 'r', 'e', 'a', 't', 'o', 'r', '"'};
+    private static final char[] chars5 = new char[] {'"', 'a', 't', 't', 'r', 'i', 'b', 'u', 't', 'e', 's', '"'};
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -28,7 +52,8 @@ public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
         var v0 = o.name();
         if (v0 != null) {
             first = false;
-            writer.writeName("name");
+            writer.write(chars0);
+            writer.writeColon();
             writer.writeString(v0);
         }
         var v1 = o.kind();
@@ -38,7 +63,8 @@ public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
             } else {
                 writer.writeComma();
             }
-            writer.writeName("kind");
+            writer.write(chars1);
+            writer.writeColon();
             writer.writeString(v1.name());
         }
         var v2 = o.password();
@@ -48,24 +74,28 @@ public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
             } else {
                 writer.writeComma();
             }
-            writer.writeName("password");
+            writer.write(chars2);
+            writer.writeColon();
             writer.writeString(v2);
         }
         if (!first) {
             writer.writeComma();
         }
-        writer.writeName("activated");
+        writer.write(chars3);
+        writer.writeColon();
         writer.writeBoolean(o.activated());
         var v3 = o.creator();
         if (v3 != null) {
             writer.writeComma();
-            writer.writeName("creator");
+            writer.write(chars4);
+            writer.writeColon();
             writer.writeObjectOrNull(v3, this);
         }
         var v4 = o.attributes();
         if (v4 != null) {
             writer.writeComma();
-            writer.writeName("attributes");
+            writer.write(chars5);
+            writer.writeColon();
             writer.writeObject(v4, adapter1);
         }
         writer.writeRBrace();
@@ -84,17 +114,17 @@ public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
              reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
             switch(name) {
-                case "name" -> v5 = reader.readStringOrNull();
-                case "kind" -> v6 = reader.readNullable(() -> org.jsonk.mocks.UserKind.valueOf(reader.readString()));
-                case "password" -> v7 = reader.readStringOrNull();
-                case "activated" -> v8 = reader.readBoolean();
-                case "creator" -> v9 = reader.readObject(this);
-                case "attributes" -> v10 = reader.readObject(adapter1);
+                case 0 -> v5 = reader.readStringOrNull();
+                case 1 -> v6 = reader.readNullable(() -> org.jsonk.mocks.UserKind.valueOf(reader.readString()));
+                case 2 -> v7 = reader.readStringOrNull();
+                case 3 -> v8 = reader.readBoolean();
+                case 4 -> v9 = reader.readObject(this);
+                case 5 -> v10 = reader.readObject(adapter1);
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();

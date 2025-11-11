@@ -31,27 +31,26 @@ public class Jsonk {
 
     @SneakyThrows
     public static void toJson(Object o, Writer writer, Option option) {
-        try (var w = option.indent ? new IndentJsonWriter(registry, writer) : new JsonWriter(registry, writer)) {
+        try (var w = option.indent ? new IndentJsonWriter(registry, writer) : new JsonWriterImpl(registry, writer)) {
             w.writeValue(o);
-            w.flush();
         }
     }
 
-    public static <T> T fromJson(Class<T> clazz, String json) {
-        return fromJson(clazz, new StringReader(json));
+    public static <T> T fromJson(String json, Class<T> clazz) {
+        return fromJson(new StringReader(json), clazz);
     }
 
-    public static <T> T fromJson(Class<T> clazz, Reader reader) {
+    public static <T> T fromJson(Reader reader, Class<T> clazz) {
         //noinspection unchecked
-        return (T) fromJson(Type.from(clazz), reader);
+        return (T) fromJson(reader, Type.from(clazz));
     }
 
-    public static Object fromJson(Type type, String json) {
-        return fromJson(type, new StringReader(json));
+    public static Object fromJson(String json, Type type) {
+        return fromJson(new StringReader(json), type);
     }
 
-    public static Object fromJson(Type type, Reader reader) {
-        try (var jsonReader = new JsonReader(reader)) {
+    public static Object fromJson(Reader reader, Type type) {
+        try (var jsonReader = new JsonReaderImpl(reader)) {
             jsonReader.skipWhitespace();
             return jsonReader.readObject(registry.getAdapter(type));
         }

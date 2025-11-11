@@ -8,9 +8,13 @@ import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
 import org.jsonk.AdapterRegistry;
-import org.jsonk.util.MinimalPerfectHash;
 
 public class RoleAdapter implements Adapter<org.jsonk.mocks.Role> {
+
+    private static final char[][] keys = new char[][] {
+        null};
+    private static final int[] ordinals = new int[] {-1};
+    private static final long seed = -9001394272639965909L;
 
     @Override
     public void init(AdapterRegistry registry) {
@@ -24,13 +28,12 @@ public class RoleAdapter implements Adapter<org.jsonk.mocks.Role> {
 
     @Override
     public org.jsonk.mocks.Role fromJson(JsonReader reader) {
-        var o = new Role();
         reader.accept('{');
         do {
-            reader.skipWhitespace();
+             reader.skipWhitespace();
             if (reader.is('}'))
                 break;
-            var name = reader.readString();
+            var name = reader.readName(keys, ordinals, seed);
             reader.skipWhitespace();
             reader.accept(':');
             reader.skipWhitespace();
@@ -40,6 +43,7 @@ public class RoleAdapter implements Adapter<org.jsonk.mocks.Role> {
             reader.skipWhitespace();
         } while (reader.skip(','));
         reader.accept('}');
+        var o = new Role();
         return o;
     }
 

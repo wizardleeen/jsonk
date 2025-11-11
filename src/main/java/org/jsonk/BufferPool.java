@@ -1,8 +1,8 @@
-package org.jsonk.util;
+package org.jsonk;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class BufferPool {
+class BufferPool {
 
     public static final BufferPool instance = new BufferPool();
     public static final int BUF_SIZE = 4096;
