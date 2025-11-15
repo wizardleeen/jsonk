@@ -7,24 +7,22 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class MaterialAdapter implements Adapter<org.jsonk.mocks.Material> {
 
-    private Adapter<java.lang.String> adapter0;
     private static final char[][] keys = new char[][] {
-        null,
         new char[] {'n', 'a', 'm', 'e'},
         null,
+        null,
         new char[] {'a', 'm', 'o', 'u', 'n', 't'}};
-    private static final int[] ordinals = new int[] {-1, 0, -1, 1};
-    private static final long seed = 1573473972104096757L;
+    private static final int[] ordinals = new int[] {0, -1, -1, 1};
+    private static final long seed = 4996116371030011712L;
     private static final char[] chars0 = new char[] {'"', 'n', 'a', 'm', 'e', '"'};
     private static final char[] chars1 = new char[] {'"', 'a', 'm', 'o', 'u', 'n', 't', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.String.class);
+    public void init(AdapterEnv env) {
     }
 
     @Override

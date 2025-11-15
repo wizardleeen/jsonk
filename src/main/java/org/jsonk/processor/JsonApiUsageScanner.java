@@ -13,14 +13,14 @@ import javax.tools.Diagnostic;
 class JsonApiUsageScanner extends TreePathScanner<Void, Void> {
 
     private final Trees trees;
-    private final CommonNames commonNames;
+    private final MyNames myNames;
     private final TypesExt typesExt;
     private final Annotations annotations;
 
 
-    JsonApiUsageScanner(Trees trees, CommonNames commonNames, TypesExt typesExt, Annotations annotations) {
+    JsonApiUsageScanner(Trees trees, MyNames myNames, TypesExt typesExt, Annotations annotations) {
         this.trees = trees;
-        this.commonNames = commonNames;
+        this.myNames = myNames;
         this.typesExt = typesExt;
         this.annotations = annotations;
     }
@@ -29,10 +29,10 @@ class JsonApiUsageScanner extends TreePathScanner<Void, Void> {
     public Void visitMethodInvocation(MethodInvocationTree node, Void unused) {
         if (trees.getElement(getCurrentPath()) instanceof ExecutableElement exec) {
             var clazz = (TypeElement) exec.getEnclosingElement();
-            if (clazz.getQualifiedName().equals(commonNames.classJsonk)) {
-                if (exec.getSimpleName().equals(commonNames.toJson))
+            if (clazz.getQualifiedName().equals(myNames.classJsonk)) {
+                if (exec.getSimpleName().equals(myNames.toJson))
                     checkToJson(node);
-                else if (exec.getSimpleName().equals(commonNames.fromJson))
+                else if (exec.getSimpleName().equals(myNames.fromJson))
                     checkFromJson(node);
             }
         }
@@ -44,9 +44,9 @@ class JsonApiUsageScanner extends TreePathScanner<Void, Void> {
         var type = trees.getTypeMirror(new TreePath(getCurrentPath(), arg));
         if (typesExt.getValueType(type) instanceof DeclaredType declType) {
             var clazz = (TypeElement) declType.asElement();
-            if (clazz.getQualifiedName().equals(commonNames.classObject))
+            if (clazz.getQualifiedName().equals(myNames.classObject))
                 return;
-            if (!annotations.isAnnotationPresent(clazz, commonNames.classJson)) {
+            if (!annotations.isAnnotationPresent(clazz, myNames.classJson)) {
                 trees.printMessage(
                         Diagnostic.Kind.ERROR,
                         "Type " + clazz.getQualifiedName() + " must be annotated with @org.jsonk.Json to be used with this API.",
@@ -62,12 +62,12 @@ class JsonApiUsageScanner extends TreePathScanner<Void, Void> {
         var type = trees.getTypeMirror(new TreePath(getCurrentPath(), arg));
         if (type instanceof DeclaredType declaredType) {
             var clazz = (TypeElement) declaredType.asElement();
-            if (clazz.getQualifiedName().equals(commonNames.classClass) && !declaredType.getTypeArguments().isEmpty()) {
+            if (clazz.getQualifiedName().equals(myNames.classClass) && !declaredType.getTypeArguments().isEmpty()) {
                 var typeArg = declaredType.getTypeArguments().getFirst();
                 if (typeArg instanceof DeclaredType declType1) {
                     var clazz1 = (TypeElement) declType1.asElement();
-                    if (!clazz1.getQualifiedName().equals(commonNames.classObject)
-                            && !annotations.isAnnotationPresent(clazz1, commonNames.classJson)) {
+                    if (!clazz1.getQualifiedName().equals(myNames.classObject)
+                            && !annotations.isAnnotationPresent(clazz1, myNames.classJson)) {
                         trees.printMessage(
                                 Diagnostic.Kind.ERROR,
                                 "Type " + clazz1.getQualifiedName() + " must be annotated with @org.jsonk.Json to be used with this API.",

@@ -18,9 +18,9 @@ public class ArrayAdapter<E> implements Adapter<E[]> {
     }
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
         //noinspection unchecked
-        elementAdapter = (Adapter<E>) registry.getAdapter(componentClass);
+        elementAdapter = (Adapter<E>) env.getAdapter(componentClass);
     }
 
     @Override

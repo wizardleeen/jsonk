@@ -7,29 +7,27 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class ProductAdapter implements Adapter<org.jsonk.mocks.Product> {
 
-    private Adapter<java.lang.String> adapter0;
     private static final char[][] keys = new char[][] {
+        null,
+        null,
+        null,
         new char[] {'n', 'a', 'm', 'e'},
         null,
-        new char[] {'p', 'r', 'i', 'c', 'e'},
         new char[] {'s', 't', 'o', 'c', 'k'},
         null,
-        null,
-        null,
-        null};
-    private static final int[] ordinals = new int[] {0, -1, 1, 2, -1, -1, -1, -1};
-    private static final long seed = -6343609588066691367L;
+        new char[] {'p', 'r', 'i', 'c', 'e'}};
+    private static final int[] ordinals = new int[] {-1, -1, -1, 0, -1, 2, -1, 1};
+    private static final long seed = 2753498123540144502L;
     private static final char[] chars0 = new char[] {'"', 'n', 'a', 'm', 'e', '"'};
     private static final char[] chars1 = new char[] {'"', 'p', 'r', 'i', 'c', 'e', '"'};
     private static final char[] chars2 = new char[] {'"', 's', 't', 'o', 'c', 'k', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.String.class);
+    public void init(AdapterEnv env) {
     }
 
     @Override

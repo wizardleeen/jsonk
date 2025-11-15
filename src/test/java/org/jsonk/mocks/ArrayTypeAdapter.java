@@ -7,23 +7,23 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class ArrayTypeAdapter implements Adapter<org.jsonk.mocks.ArrayType> {
 
     private Adapter<org.jsonk.mocks.Type> adapter0;
     private static final char[][] keys = new char[][] {
-        null,
-        new char[] {'c', 'o', 'm', 'p', 'o', 'n', 'e', 'n', 't', 'T', 'y', 'p', 'e'}};
-    private static final int[] ordinals = new int[] {-1, 0};
-    private static final long seed = -1760909142441537709L;
+        new char[] {'c', 'o', 'm', 'p', 'o', 'n', 'e', 'n', 't', 'T', 'y', 'p', 'e'},
+        null};
+    private static final int[] ordinals = new int[] {0, -1};
+    private static final long seed = 7644085448881892478L;
     private static final char[] chars0 = new char[] {'"', 't', 'y', 'p', 'e', '"'};
     private static final char[] chars1 = new char[] {'"', 'a', 'r', 'r', 'a', 'y', '"'};
     private static final char[] chars2 = new char[] {'"', 'c', 'o', 'm', 'p', 'o', 'n', 'e', 'n', 't', 'T', 'y', 'p', 'e', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(org.jsonk.mocks.Type.class);
+    public void init(AdapterEnv env) {
+        adapter0 = env.getAdapter(org.jsonk.mocks.Type.class);
     }
 
     @Override

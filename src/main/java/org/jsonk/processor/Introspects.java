@@ -12,13 +12,13 @@ import java.util.function.Supplier;
 class Introspects {
 
     private final Annotations annotations;
-    private final CommonNames commonNames;
+    private final MyNames names;
     private final TypesExt typesExt;
     private final Env env;
 
-    Introspects(Annotations annotations, CommonNames commonNames, TypesExt typesExt, Env env) {
+    Introspects(Annotations annotations, MyNames names, TypesExt typesExt, Env env) {
         this.annotations = annotations;
-        this.commonNames = commonNames;
+        this.names = names;
         this.typesExt = typesExt;
         this.env = env;
     }
@@ -103,7 +103,7 @@ class Introspects {
             }
         }
         props.values().forEach(this::checkPropertyType);
-        var annotation = annotations.getAnnotation(element, commonNames.classJson);
+        var annotation = annotations.getAnnotation(element, names.classJson);
         if (constructor == null && annotations.getTypeProperty(annotation) == null)
             throw new IllegalArgumentException("No public constructor found for " + element.getQualifiedName());
         return new Clazz(
@@ -120,20 +120,20 @@ class Introspects {
     private void checkPropertyType(Property property) {
         env.setCurrentElement(property.getMainElement());
         var type = property.getValueType();
-        if (type instanceof PrimitiveType)
+        if (type instanceof PrimitiveType || type instanceof TypeVariable)
             return;
         if (type instanceof ClassType ct) {
-            if (commonNames.builtinClassNames.contains(ct.qualName()))
+            if (names.builtinClassNames.contains(ct.qualName()))
                 return;
             var clazz = (TypeElement) ct.element();
-            if (annotations.isAnnotationPresent(clazz, commonNames.classJson))
+            if (annotations.isAnnotationPresent(clazz, names.classJson))
                 return;
         }
         env.addError("Missing annotation @Json on '" + property.getValueType() + "'");
     }
 
     private Property createProperty(String name) {
-        return new Property(annotations, commonNames, typesExt, name, env);
+        return new Property(annotations, names, typesExt, name, env);
     }
 
     private Constructor buildConstructor(ExecutableElement method) {
@@ -148,9 +148,9 @@ class Introspects {
     }
 
     private String getPropName(Element element, Supplier<String> getDefault) {
-        var annotation = annotations.getAnnotation(element, commonNames.classJsonProperty);
+        var annotation = annotations.getAnnotation(element, names.classJsonProperty);
         if (annotation != null) {
-            var name = (String) annotations.getAttribute(annotation, commonNames.value);
+            var name = (String) annotations.getAttribute(annotation, names.value);
             if (StringUtil.isNotEmpty(name))
                 return name;
         }
@@ -166,7 +166,7 @@ class Introspects {
         var typeNames = new HashMap<String, TypeName>();
         while (!queue.isEmpty()) {
             var s = queue.poll();
-            var annotation = annotations.getAnnotation(s, commonNames.classJson);
+            var annotation = annotations.getAnnotation(s, names.classJson);
             if (annotation != null) {
                 var typeProp = annotations.getTypeProperty(annotation);
                 if (typeProp != null) {

@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class BooleanArrayAdapter implements Adapter<boolean[]> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

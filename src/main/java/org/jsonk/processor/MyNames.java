@@ -4,7 +4,7 @@ import javax.lang.model.element.Name;
 import javax.lang.model.util.Elements;
 import java.util.Set;
 
-class CommonNames {
+class MyNames {
 
     final Name toJson;
     final Name fromJson;
@@ -63,7 +63,7 @@ class CommonNames {
     final Name subTypes;
     final Set<Name> builtinClassNames;
 
-    public CommonNames(Elements elements) {
+    public MyNames(Elements elements) {
         classJsonk = elements.getName("org.jsonk.Jsonk");
         classObject = elements.getName("java.lang.Object");
         classClass = elements.getName("java.lang.Class");

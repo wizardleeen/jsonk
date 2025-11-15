@@ -24,7 +24,7 @@ public class JsonkProcessor extends AbstractProcessor {
     private Elements elements;
     private Types types;
     private Trees trees;
-    private CommonNames commonNames;
+    private MyNames myNames;
     private Annotations annotations;
     private TypesExt typesExt;
     private JsonApiUsageScanner scanner;
@@ -38,11 +38,11 @@ public class JsonkProcessor extends AbstractProcessor {
         elements = processingEnv.getElementUtils();
         types = processingEnv.getTypeUtils();
         trees = Trees.instance(processingEnv);
-        commonNames = new CommonNames(elements);
-        typesExt = new TypesExt(commonNames);
-        annotations = new Annotations(commonNames, typesExt);
-        introspects = new Introspects(annotations, commonNames, typesExt, env);
-        scanner = new JsonApiUsageScanner(trees, commonNames, typesExt, annotations);
+        myNames = new MyNames(elements);
+        typesExt = new TypesExt(myNames);
+        annotations = new Annotations(myNames, typesExt);
+        introspects = new Introspects(annotations, myNames, typesExt, env);
+        scanner = new JsonApiUsageScanner(trees, myNames, typesExt, annotations);
     }
 
     private static <T> T jbUnwrap(Class<? extends T> iface, T wrapper) {
@@ -81,7 +81,7 @@ public class JsonkProcessor extends AbstractProcessor {
             if (annotations.hasCustomAdapter(clazz))
                 continue;
             var builderFile = processingEnv.getFiler().createSourceFile(clazz.getQualifiedName() + "Adapter");
-            var adapterGenerator = new AdapterGenerator(clazz, elements, types, typesExt, introspects, commonNames, annotations, env);
+            var adapterGenerator = new AdapterGenerator(clazz, elements, types, typesExt, introspects, myNames, annotations, env);
             var text = adapterGenerator.generate();
             if (!env.hasError()) {
                 try (var writer = builderFile.openWriter()) {
@@ -128,7 +128,7 @@ public class JsonkProcessor extends AbstractProcessor {
         var existing = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", resource);
         var content = existing.getLastModified() != 0 ? existing.getCharContent(true).toString() : "";
         var file = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", resource);
-        var serviceMappingGenerator = new ServiceMappingGenerator(annotations, commonNames, typesExt);
+        var serviceMappingGenerator = new ServiceMappingGenerator(annotations, myNames, typesExt);
         try (var writer = file.openWriter()) {
             writer.write(serviceMappingGenerator.generate(readExisting(content), classes));
         }
@@ -140,7 +140,7 @@ public class JsonkProcessor extends AbstractProcessor {
         var existing = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", resource);
         var content = existing.getLastModified() != 0 ? existing.getCharContent(true).toString() : "";
         var file = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", resource);
-        var gen = new AdapterFactoryMappingGenerator(annotations, commonNames, typesExt);
+        var gen = new AdapterFactoryMappingGenerator(annotations, myNames, typesExt);
         try (var writer = file.openWriter()) {
             writer.write(gen.generate(readExisting(content), classes));
         }

@@ -7,30 +7,28 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class TypeAdapter implements Adapter<org.jsonk.mocks.Type> {
 
-    private Adapter<java.lang.String> adapter0;
-    private Adapter<org.jsonk.mocks.ClassType> adapter1;
-    private Adapter<org.jsonk.mocks.PrimitiveType> adapter2;
-    private Adapter<org.jsonk.mocks.ArrayType> adapter3;
+    private Adapter<org.jsonk.mocks.ClassType> adapter0;
+    private Adapter<org.jsonk.mocks.PrimitiveType> adapter1;
+    private Adapter<org.jsonk.mocks.ArrayType> adapter2;
     private static final char[] chars0 = new char[] {'"', 't', 'y', 'p', 'e', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.String.class);
-        adapter1 = registry.getAdapter(org.jsonk.mocks.ClassType.class);
-        adapter2 = registry.getAdapter(org.jsonk.mocks.PrimitiveType.class);
-        adapter3 = registry.getAdapter(org.jsonk.mocks.ArrayType.class);
+    public void init(AdapterEnv env) {
+        adapter0 = env.getAdapter(org.jsonk.mocks.ClassType.class);
+        adapter1 = env.getAdapter(org.jsonk.mocks.PrimitiveType.class);
+        adapter2 = env.getAdapter(org.jsonk.mocks.ArrayType.class);
     }
 
     @Override
     public void toJson(org.jsonk.mocks.Type o, JsonWriter writer) {
         switch(o) {
-            case org.jsonk.mocks.ClassType v0 -> adapter1.toJson(v0, writer);
-            case org.jsonk.mocks.PrimitiveType v1 -> adapter2.toJson(v1, writer);
-            case org.jsonk.mocks.ArrayType v2 -> adapter3.toJson(v2, writer);
+            case org.jsonk.mocks.ClassType v0 -> adapter0.toJson(v0, writer);
+            case org.jsonk.mocks.PrimitiveType v1 -> adapter1.toJson(v1, writer);
+            case org.jsonk.mocks.ArrayType v2 -> adapter2.toJson(v2, writer);
             default -> throw new IllegalStateException("Unexpected value: " + o);
         }
     }
@@ -52,15 +50,15 @@ public class TypeAdapter implements Adapter<org.jsonk.mocks.Type> {
                 switch (typeProp) {
                     case "class" -> {
                         reader.rollback();
-                        return adapter1.fromJson(reader);
+                        return adapter0.fromJson(reader);
                     }
                     case "primitive" -> {
                         reader.rollback();
-                        return adapter2.fromJson(reader);
+                        return adapter1.fromJson(reader);
                     }
                     case "array" -> {
                         reader.rollback();
-                        return adapter3.fromJson(reader);
+                        return adapter2.fromJson(reader);
                     }
                     default -> throw reader.parseException("Unknown type type property: " + typeProp);
                 }

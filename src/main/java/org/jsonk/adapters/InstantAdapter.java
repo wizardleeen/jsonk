@@ -12,7 +12,7 @@ public class InstantAdapter implements Adapter<Instant>  {
     }
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
     }
 
     @Override

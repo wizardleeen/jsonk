@@ -5,7 +5,7 @@ import org.jsonk.Type;
 
 public class IntegerAdapter implements Adapter<Integer> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
         
     }
 

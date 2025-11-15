@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class LongArrayAdapter implements Adapter<long[]> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

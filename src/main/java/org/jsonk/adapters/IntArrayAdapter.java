@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class IntArrayAdapter implements Adapter<int[]> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

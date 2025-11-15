@@ -7,7 +7,7 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class CyclicRefFooAdapter implements Adapter<org.jsonk.mocks.CyclicRefFoo> {
 
@@ -16,12 +16,12 @@ public class CyclicRefFooAdapter implements Adapter<org.jsonk.mocks.CyclicRefFoo
         new char[] {'v', 'a', 'l', 'u', 'e'},
         null};
     private static final int[] ordinals = new int[] {0, -1};
-    private static final long seed = -5542535026285684763L;
+    private static final long seed = 1628547621653455800L;
     private static final char[] chars0 = new char[] {'"', 'v', 'a', 'l', 'u', 'e', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.Object.class);
+    public void init(AdapterEnv env) {
+        adapter0 = env.getAdapter(java.lang.Object.class);
     }
 
     @Override

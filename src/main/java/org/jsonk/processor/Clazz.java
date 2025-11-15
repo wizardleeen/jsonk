@@ -121,6 +121,7 @@ final class Clazz {
             var type = prop.getType();
             Map<String, Object> attrs = df != null ? Map.of("dateFormat", df) : Map.of();
             if (type instanceof ClassType ct && ct.element().getKind() != ElementKind.ENUM
+                    && !ct.qualName().contentEquals("java.lang.String")
                     || type instanceof ArrayType || type instanceof TypeVariable) {
                 if (visited.add(List.of(type, attrs)))
                     action.accept(type, attrs);

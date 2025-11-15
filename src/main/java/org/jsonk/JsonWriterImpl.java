@@ -2,9 +2,6 @@ package org.jsonk;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.jsonk.adapters.ArrayListAdapter;
-import org.jsonk.adapters.HashMapAdapter;
-import org.jsonk.adapters.HashSetAdapter;
 import org.jsonk.jdk.internal.DoubleToDecimal;
 import org.jsonk.jdk.internal.FloatToDecimal;
 import org.jsonk.util.StringUtil;
@@ -277,9 +274,27 @@ class JsonWriterImpl implements Closeable, JsonWriter {
             case Float f -> writeFloat(f);
             case Double d -> writeDouble(d);
             case String s -> writeString(s);
+            //noinspection rawtypes
+            case Map map -> writeMap(map);
+            //noinspection rawtypes
+            case List list -> writeList(list);
+            //noinspection rawtypes
+            case Set set -> writeSet(set);
             case null -> writeNull();
             default -> writeObject(o);
         }
+    }
+
+    private void writeMap(Map<?, ?> map) {
+        writeObject(map, adapterRegistry.getAdapter(Map.class));
+    }
+
+    private void writeSet(Set<?> set) {
+        writeObject(set, adapterRegistry.getAdapter(Set.class));
+    }
+
+    private void writeList(List<?> list) {
+        writeObject(list, adapterRegistry.getAdapter(List.class));
     }
 
     @Override
@@ -290,12 +305,7 @@ class JsonWriterImpl implements Closeable, JsonWriter {
     @Override
     public void writeObject(Object o) {
         //noinspection rawtypes
-        Adapter adapter = adapterRegistry.getAdapter(Type.from(o.getClass()), Map.of(), () -> switch (o) {
-            case Map<?, ?> ignored -> new HashMapAdapter<>(Type.from(o.getClass()), Map.of());
-            case List<?> ignored -> new ArrayListAdapter<>(Type.from(o.getClass()), Map.of());
-            case Set<?> ignored -> new HashSetAdapter<>(Type.from(o.getClass()), Map.of());
-            default -> throw new IllegalStateException("No adapter found for class: " + o.getClass());
-        });
+        Adapter adapter = adapterRegistry.getAdapter(o.getClass());
         //noinspection unchecked
         writeObject(o, adapter);
     }

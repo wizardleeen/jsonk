@@ -14,7 +14,7 @@ public class ZonedDateTimeAdapter implements Adapter<ZonedDateTime>  {
     }
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
     }
 
     @Override

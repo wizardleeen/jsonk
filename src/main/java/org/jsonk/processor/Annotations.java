@@ -11,11 +11,11 @@ import java.util.function.Supplier;
 
 class Annotations {
 
-    private final CommonNames commonNames;
+    private final MyNames myNames;
     private final TypesExt typesExt;
 
-    Annotations(CommonNames commonNames, TypesExt typesExt) {
-        this.commonNames = commonNames;
+    Annotations(MyNames myNames, TypesExt typesExt) {
+        this.myNames = myNames;
         this.typesExt = typesExt;
     }
 
@@ -24,13 +24,13 @@ class Annotations {
     }
 
     public PropertyConfig getPropertyConfig(Element element) {
-        var annotation = getAnnotation(element, commonNames.classJsonProperty);
+        var annotation = getAnnotation(element, myNames.classJsonProperty);
         if (annotation == null)
             return PropertyConfig.DEFAULT;
         return new PropertyConfig(
-                emptyToNull((String) getAttribute(annotation, commonNames.value)),
-                (boolean) getAttribute(annotation, commonNames.includeNull, false),
-                emptyToNull((String) getAttribute(annotation, commonNames.dateTimeFormat))
+                emptyToNull((String) getAttribute(annotation, myNames.value)),
+                (boolean) getAttribute(annotation, myNames.includeNull, false),
+                emptyToNull((String) getAttribute(annotation, myNames.dateTimeFormat))
         );
     }
 
@@ -39,19 +39,19 @@ class Annotations {
     }
 
     public boolean isIgnorePresent(Element element) {
-        return getAnnotation(element, commonNames.classJsonIgnore) != null;
+        return getAnnotation(element, myNames.classJsonIgnore) != null;
     }
 
     public boolean hasCustomAdapter(TypeElement element) {
-        var annotation = getAnnotation(element, commonNames.classJson);
+        var annotation = getAnnotation(element, myNames.classJson);
         var adapter = getAdapter(annotation);
-        return adapter != null && !typesExt.getClassName(adapter).equals(commonNames.classAdapter);
+        return adapter != null && !typesExt.getClassName(adapter).equals(myNames.classAdapter);
     }
 
     public boolean hasCustomAdapterFactory(TypeElement element) {
-        var annotation = getAnnotation(element, commonNames.classJson);
+        var annotation = getAnnotation(element, myNames.classJson);
         var adapter = getAdapterFactory(annotation);
-        return adapter != null && !typesExt.getClassName(adapter).equals(commonNames.classAdapterFactory);
+        return adapter != null && !typesExt.getClassName(adapter).equals(myNames.classAdapterFactory);
     }
 
     public AnnotationMirror getAnnotation(Element element, Name name) {
@@ -60,7 +60,7 @@ class Annotations {
     }
 
     public String getTypeProperty(AnnotationMirror annotation) {
-        return (String) getAttribute(annotation, commonNames.typeProperty);
+        return (String) getAttribute(annotation, myNames.typeProperty);
     }
 
     public Object getAttribute(AnnotationMirror annotation, Name attribute) {
@@ -84,7 +84,7 @@ class Annotations {
     public DeclaredType getAdapter(AnnotationMirror annotation) {
         var elements = annotation.getElementValues();
         for (var e : elements.entrySet()) {
-            if (e.getKey().getSimpleName().equals(commonNames.adapter)) {
+            if (e.getKey().getSimpleName().equals(myNames.adapter)) {
                 return (DeclaredType) Objects.requireNonNull(e.getValue().getValue());
             }
         }
@@ -94,7 +94,7 @@ class Annotations {
     public DeclaredType getAdapterFactory(AnnotationMirror annotation) {
         var elements = annotation.getElementValues();
         for (var e : elements.entrySet()) {
-            if (e.getKey().getSimpleName().equals(commonNames.classAdapter)) {
+            if (e.getKey().getSimpleName().equals(myNames.classAdapter)) {
                 return (DeclaredType) Objects.requireNonNull(e.getValue().getValue());
             }
         }
@@ -104,7 +104,7 @@ class Annotations {
     public void forEachSubType(AnnotationMirror annotation, BiConsumer<String, DeclaredType> action) {
         var elements = annotation.getElementValues();
         for (var e : elements.entrySet()) {
-            if (e.getKey().getSimpleName().equals(commonNames.subTypes)) {
+            if (e.getKey().getSimpleName().equals(myNames.subTypes)) {
                 //noinspection unchecked
                 for (AnnotationValue a : (List<AnnotationValue>) e.getValue().getValue()) {
                     String value = null;
@@ -112,9 +112,9 @@ class Annotations {
                     var m = (AnnotationMirror) a.getValue();
                     for (var entry : m.getElementValues().entrySet()) {
                         var key = entry.getKey().getSimpleName();
-                        if (key.equals(commonNames.value))
+                        if (key.equals(myNames.value))
                             value = (String) entry.getValue().getValue();
-                        else if (key.equals(commonNames.type))
+                        else if (key.equals(myNames.type))
                             type = (DeclaredType) entry.getValue().getValue();
                     }
                     action.accept(value, type);

@@ -14,10 +14,10 @@ import javax.lang.model.util.Types;
 
 class TypesExt {
 
-    private final CommonNames commonNames;
+    private final MyNames myNames;
 
-    TypesExt(CommonNames commonNames) {
-        this.commonNames = commonNames;
+    TypesExt(MyNames myNames) {
+        this.myNames = myNames;
     }
 
     boolean isClassType(DeclaredType type, Name qualName) {
@@ -31,33 +31,33 @@ class TypesExt {
     public boolean isBooleanType(TypeMirror type) {
         return switch (type.getKind()) {
             case BOOLEAN -> true;
-            case DECLARED -> getClassName((DeclaredType) type).equals(commonNames.classBoolean);
+            case DECLARED -> getClassName((DeclaredType) type).equals(myNames.classBoolean);
             default -> false;
         };
     }
 
     public boolean isDateType(TypeMirror type) {
-        return type instanceof DeclaredType dt && isClassType(dt, commonNames.classDate);
+        return type instanceof DeclaredType dt && isClassType(dt, myNames.classDate);
     }
 
     public boolean isInstantType(TypeMirror type) {
-        return type instanceof DeclaredType dt && isClassType(dt, commonNames.classInstant);
+        return type instanceof DeclaredType dt && isClassType(dt, myNames.classInstant);
     }
 
     public boolean isTemporalType(TypeMirror type, Elements elements, Types types) {
         if (type instanceof DeclaredType dt) {
-            var temporalType = elements.getTypeElement(commonNames.classTemporal).asType();
+            var temporalType = elements.getTypeElement(myNames.classTemporal).asType();
             return types.isAssignable(dt, temporalType);
         } else
             return false;
     }
 
     public boolean isStringType(TypeMirror type) {
-        return type instanceof DeclaredType dt && isClassType(dt, commonNames.classString);
+        return type instanceof DeclaredType dt && isClassType(dt, myNames.classString);
     }
 
     public boolean isObjectType(DeclaredType type) {
-        return isClassType(type, commonNames.classObject);
+        return isClassType(type, myNames.classObject);
     }
 
     public TypeElement getClazz(TypeMirror type) {

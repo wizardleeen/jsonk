@@ -7,17 +7,17 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class ItemAdapter<T> implements Adapter<org.jsonk.mocks.Item<T>> {
 
     private final Type type;
     private Adapter<T> adapter0;
     private static final char[][] keys = new char[][] {
-        null,
-        new char[] {'v', 'a', 'l', 'u', 'e'}};
-    private static final int[] ordinals = new int[] {-1, 0};
-    private static final long seed = -5532191474317929232L;
+        new char[] {'v', 'a', 'l', 'u', 'e'},
+        null};
+    private static final int[] ordinals = new int[] {0, -1};
+    private static final long seed = 8143703029326192678L;
     private static final char[] chars0 = new char[] {'"', 'v', 'a', 'l', 'u', 'e', '"'};
 
     public ItemAdapter(Type type) {
@@ -25,8 +25,8 @@ public class ItemAdapter<T> implements Adapter<org.jsonk.mocks.Item<T>> {
     }
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = (Adapter) registry.getAdapter(type.typeArguments().get(0));
+    public void init(AdapterEnv env) {
+        adapter0 = (Adapter) env.getAdapter(type.typeArguments().get(0));
     }
 
     @Override

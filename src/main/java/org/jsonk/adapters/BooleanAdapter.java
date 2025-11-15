@@ -5,7 +5,7 @@ import org.jsonk.Type;
 
 public class BooleanAdapter implements Adapter<Boolean> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
         
     }
 

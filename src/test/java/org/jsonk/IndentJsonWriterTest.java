@@ -12,10 +12,7 @@ public class IndentJsonWriterTest extends TestCase {
 
     @Override
     protected void setUp() {
-        AdapterRegistry.instance.addAdapter(new UserAdapter());
-        AdapterRegistry.instance.addAdapter(new OrderAdapter());
-        AdapterRegistry.instance.addAdapter(new OrderItemAdapter());
-        AdapterRegistry.instance.initAdapters();
+        AdapterRegistry.instance.addAdapter(new UserAdapter(), new OrderAdapter(), new OrderItemAdapter());
     }
 
     public void test() {

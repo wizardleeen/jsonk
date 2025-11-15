@@ -5,7 +5,7 @@ import org.jsonk.Type;
 
 public class ByteAdapter implements Adapter<Byte> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
         
     }
 

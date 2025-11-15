@@ -7,24 +7,24 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class BOMAdapter implements Adapter<org.jsonk.mocks.BOM> {
 
     private Adapter<org.jsonk.mocks.Material> adapter0;
     private static final char[][] keys = new char[][] {
+        null,
+        null,
         new char[] {'v', 'e', 'r', 's', 'i', 'o', 'n'},
-        null,
-        null,
         new char[] {'p', 'r', 'o', 'd', 'u', 'c', 't'}};
-    private static final int[] ordinals = new int[] {1, -1, -1, 0};
-    private static final long seed = 6381830176811159538L;
+    private static final int[] ordinals = new int[] {-1, -1, 1, 0};
+    private static final long seed = 4992628780046536239L;
     private static final char[] chars0 = new char[] {'"', 'p', 'r', 'o', 'd', 'u', 'c', 't', '"'};
     private static final char[] chars1 = new char[] {'"', 'v', 'e', 'r', 's', 'i', 'o', 'n', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(org.jsonk.mocks.Material.class);
+    public void init(AdapterEnv env) {
+        adapter0 = env.getAdapter(org.jsonk.mocks.Material.class);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class CharArrayAdapter implements Adapter<char[]> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

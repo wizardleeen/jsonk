@@ -4,7 +4,7 @@ import org.jsonk.*;
 
 public class ObjectAdapter implements Adapter<Object> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

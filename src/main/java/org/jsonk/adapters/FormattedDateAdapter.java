@@ -17,7 +17,7 @@ public class FormattedDateAdapter implements Adapter<Date> {
     }
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

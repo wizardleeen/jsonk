@@ -7,7 +7,7 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class LocalDateTimeFooAdapter implements Adapter<org.jsonk.mocks.LocalDateTimeFoo> {
 
@@ -16,20 +16,20 @@ public class LocalDateTimeFooAdapter implements Adapter<org.jsonk.mocks.LocalDat
     private static final char[][] keys = new char[][] {
         null,
         new char[] {'t', 'i', 'm', 'e'},
-        null,
-        new char[] {'t', 'i', 'm', 'e', '1'}};
-    private static final int[] ordinals = new int[] {-1, 0, -1, 1};
-    private static final long seed = -1392896483960742256L;
+        new char[] {'t', 'i', 'm', 'e', '1'},
+        null};
+    private static final int[] ordinals = new int[] {-1, 0, 1, -1};
+    private static final long seed = -8066454907577447300L;
     private static final char[] chars0 = new char[] {'"', 't', 'i', 'm', 'e', '"'};
     private static final char[] chars1 = new char[] {'"', 't', 'i', 'm', 'e', '1', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.time.LocalDateTime.class, Map.ofEntries(
+    public void init(AdapterEnv env) {
+        adapter0 = env.getAdapter(java.time.LocalDateTime.class, Map.ofEntries(
             Map.entry("dateFormat", "yyyy-MM-dd HH:mm:ss")
         )
         );
-        adapter1 = registry.getAdapter(java.time.LocalDateTime.class);
+        adapter1 = env.getAdapter(java.time.LocalDateTime.class);
     }
 
     @Override

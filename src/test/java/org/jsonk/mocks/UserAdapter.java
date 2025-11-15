@@ -7,31 +7,30 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
 
-    private Adapter<java.lang.String> adapter0;
-    private Adapter<java.util.Map<java.lang.String,java.lang.Object>> adapter1;
+    private Adapter<java.util.Map<java.lang.String,java.lang.Object>> adapter0;
     private static final char[][] keys = new char[][] {
         null,
-        new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'},
+        new char[] {'a', 't', 't', 'r', 'i', 'b', 'u', 't', 'e', 's'},
         null,
         new char[] {'c', 'r', 'e', 'a', 't', 'o', 'r'},
         null,
+        null,
         new char[] {'a', 'c', 't', 'i', 'v', 'a', 't', 'e', 'd'},
-        new char[] {'a', 't', 't', 'r', 'i', 'b', 'u', 't', 'e', 's'},
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        new char[] {'n', 'a', 'm', 'e'},
         new char[] {'k', 'i', 'n', 'd'},
+        new char[] {'n', 'a', 'm', 'e'},
+        null,
+        null,
+        null,
+        null,
+        new char[] {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'},
+        null,
         null};
-    private static final int[] ordinals = new int[] {-1, 2, -1, 4, -1, 3, 5, -1, -1, -1, -1, -1, -1, 0, 1, -1};
-    private static final long seed = 6931712918601522444L;
+    private static final int[] ordinals = new int[] {-1, 5, -1, 4, -1, -1, 3, 1, 0, -1, -1, -1, -1, 2, -1, -1};
+    private static final long seed = 4678264231828607429L;
     private static final char[] chars0 = new char[] {'"', 'n', 'a', 'm', 'e', '"'};
     private static final char[] chars1 = new char[] {'"', 'k', 'i', 'n', 'd', '"'};
     private static final char[] chars2 = new char[] {'"', 'p', 'a', 's', 's', 'w', 'o', 'r', 'd', '"'};
@@ -40,9 +39,8 @@ public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
     private static final char[] chars5 = new char[] {'"', 'a', 't', 't', 'r', 'i', 'b', 'u', 't', 'e', 's', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.String.class);
-        adapter1 = (Adapter) registry.getAdapter(Type.from(java.util.Map.class, Type.from(java.lang.String.class), Type.from(java.lang.Object.class)));
+    public void init(AdapterEnv env) {
+        adapter0 = (Adapter) env.getAdapter(Type.from(java.util.Map.class, Type.from(java.lang.String.class), Type.from(java.lang.Object.class)));
     }
 
     @Override
@@ -96,7 +94,7 @@ public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
             writer.writeComma();
             writer.write(chars5);
             writer.writeColon();
-            writer.writeObject(v4, adapter1);
+            writer.writeObject(v4, adapter0);
         }
         writer.writeRBrace();
     }
@@ -124,7 +122,7 @@ public class UserAdapter implements Adapter<org.jsonk.mocks.User> {
                 case 2 -> v7 = reader.readStringOrNull();
                 case 3 -> v8 = reader.readBoolean();
                 case 4 -> v9 = reader.readObject(this);
-                case 5 -> v10 = reader.readObject(adapter1);
+                case 5 -> v10 = reader.readObject(adapter0);
                 default -> reader.skipValue();
             }
             reader.skipWhitespace();

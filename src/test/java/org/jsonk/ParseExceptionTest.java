@@ -10,7 +10,6 @@ public class ParseExceptionTest extends TestCase {
     protected void setUp() {
         var registry = AdapterRegistry.instance;
         registry.addAdapter(new UserAdapter());
-        registry.initAdapters();
     }
 
     public void testUnterminatedString() {

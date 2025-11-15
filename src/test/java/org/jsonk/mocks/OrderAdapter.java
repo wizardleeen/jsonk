@@ -7,21 +7,21 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class OrderAdapter implements Adapter<org.jsonk.mocks.Order> {
 
     private Adapter<java.util.List<org.jsonk.mocks.OrderItem>> adapter0;
     private static final char[][] keys = new char[][] {
-        null,
-        new char[] {'i', 't', 'e', 'm', 's'}};
-    private static final int[] ordinals = new int[] {-1, 0};
-    private static final long seed = 3835353032691092054L;
+        new char[] {'i', 't', 'e', 'm', 's'},
+        null};
+    private static final int[] ordinals = new int[] {0, -1};
+    private static final long seed = -2006895371468814518L;
     private static final char[] chars0 = new char[] {'"', 'i', 't', 'e', 'm', 's', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = (Adapter) registry.getAdapter(Type.from(java.util.List.class, Type.from(org.jsonk.mocks.OrderItem.class)));
+    public void init(AdapterEnv env) {
+        adapter0 = (Adapter) env.getAdapter(Type.from(java.util.List.class, Type.from(org.jsonk.mocks.OrderItem.class)));
     }
 
     @Override

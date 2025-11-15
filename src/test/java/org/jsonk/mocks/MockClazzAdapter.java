@@ -7,19 +7,19 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class MockClazzAdapter implements Adapter<org.jsonk.mocks.MockClazz> {
 
     private static final char[][] keys = new char[][] {
-        new char[] {'a', 'b', 's', 't', 'r', 'a', 'c', 't'},
-        null};
-    private static final int[] ordinals = new int[] {0, -1};
-    private static final long seed = -4904386468386775572L;
+        null,
+        new char[] {'a', 'b', 's', 't', 'r', 'a', 'c', 't'}};
+    private static final int[] ordinals = new int[] {-1, 0};
+    private static final long seed = 3952735267549655641L;
     private static final char[] chars0 = new char[] {'"', 'a', 'b', 's', 't', 'r', 'a', 'c', 't', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
     }
 
     @Override

@@ -4,7 +4,7 @@ import org.jsonk.*;
 
 public class StringAdapter implements Adapter<String> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

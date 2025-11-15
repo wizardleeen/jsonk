@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class DoubleArrayAdapter implements Adapter<double[]> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

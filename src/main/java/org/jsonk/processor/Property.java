@@ -11,7 +11,7 @@ import java.util.Objects;
 class Property implements Variable {
 
     private final Annotations annotations;
-    private final CommonNames commonNames;
+    private final MyNames myNames;
     private final TypesExt typesExt;
     private final String name;
     @Getter
@@ -29,9 +29,9 @@ class Property implements Variable {
     private Type type;
     private final Env env;
 
-    public Property(Annotations annotations, CommonNames commonNames, TypesExt typesExt, String name, Env env) {
+    public Property(Annotations annotations, MyNames myNames, TypesExt typesExt, String name, Env env) {
         this.annotations = annotations;
-        this.commonNames = commonNames;
+        this.myNames = myNames;
         this.typesExt = typesExt;
         this.name = name;
         this.env = env;
@@ -181,13 +181,13 @@ class Property implements Variable {
 
     private PropertyConfig getConfig() {
         if (config == null) {
-            if (recordComponent != null && annotations.isAnnotationPresent(recordComponent, commonNames.classJsonProperty))
+            if (recordComponent != null && annotations.isAnnotationPresent(recordComponent, myNames.classJsonProperty))
                 config = annotations.getPropertyConfig(recordComponent);
-            if (getter != null && annotations.isAnnotationPresent(getter, commonNames.classJsonProperty))
+            if (getter != null && annotations.isAnnotationPresent(getter, myNames.classJsonProperty))
                 config = annotations.getPropertyConfig(getter);
-            else if (setter != null && annotations.isAnnotationPresent(setter, commonNames.classJsonProperty))
+            else if (setter != null && annotations.isAnnotationPresent(setter, myNames.classJsonProperty))
                 config = annotations.getPropertyConfig(setter);
-            else if (field != null && annotations.isAnnotationPresent(field, commonNames.classJsonProperty))
+            else if (field != null && annotations.isAnnotationPresent(field, myNames.classJsonProperty))
                 config =  annotations.getPropertyConfig(field);
             else
                 config = PropertyConfig.DEFAULT;
@@ -216,7 +216,7 @@ class Property implements Variable {
         return getType().isNullable();
     }
 
-    public Object getValueType() {
+    public Type getValueType() {
         return getType().getValueType();
     }
 

@@ -24,7 +24,7 @@ public class ServiceMappingGeneratorTest extends TestCase {
 
     @Override
     protected void setUp() {
-        var commonNames = new CommonNames(MockElements.instance);
+        var commonNames = new MyNames(MockElements.instance);
         var typesExt = new TypesExt(commonNames);
         gen = new ServiceMappingGenerator(new Annotations(commonNames, typesExt), commonNames, typesExt);
     }

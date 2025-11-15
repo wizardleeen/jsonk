@@ -7,7 +7,7 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class ArrayFooAdapter implements Adapter<org.jsonk.mocks.ArrayFoo> {
 
@@ -16,12 +16,12 @@ public class ArrayFooAdapter implements Adapter<org.jsonk.mocks.ArrayFoo> {
         new char[] {'t', 'a', 'g', 's'},
         null};
     private static final int[] ordinals = new int[] {0, -1};
-    private static final long seed = -6433682738311357229L;
+    private static final long seed = -3691226645335080041L;
     private static final char[] chars0 = new char[] {'"', 't', 'a', 'g', 's', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.String[].class);
+    public void init(AdapterEnv env) {
+        adapter0 = env.getAdapter(java.lang.String[].class);
     }
 
     @Override

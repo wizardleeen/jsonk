@@ -13,7 +13,7 @@ import java.util.Set;
 public class AdapterFactoryMappingGeneratorTest extends TestCase {
 
     public void test() {
-        var commonNames = new CommonNames(MockElements.instance);
+        var commonNames = new MyNames(MockElements.instance);
         var typesExt = new TypesExt(commonNames);
         var annotations = new Annotations(commonNames, typesExt);
         var gen = new AdapterFactoryMappingGenerator(annotations, commonNames, typesExt);

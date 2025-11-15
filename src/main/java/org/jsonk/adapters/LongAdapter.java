@@ -5,7 +5,7 @@ import org.jsonk.Type;
 
 public class LongAdapter implements Adapter<Long> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
         
     }
 

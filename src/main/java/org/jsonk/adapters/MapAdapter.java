@@ -4,6 +4,7 @@ import org.jsonk.*;
 import org.jsonk.Type;
 
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class MapAdapter<K, V, M extends Map<K, V>> implements Adapter<M> {
 
@@ -17,24 +18,30 @@ public abstract class MapAdapter<K, V, M extends Map<K, V>> implements Adapter<M
     }
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
         var valueType = type.typeArguments().isEmpty() ?
                 Type.from(Object.class) : type.typeArguments().getLast();
         //noinspection unchecked
-        valueAdapter = (Adapter<V>) registry.getAdapter(valueType, attributes);
+        valueAdapter = (Adapter<V>) Objects.requireNonNull(env.getAdapter(valueType, attributes),
+                () -> "Adapter not found for type: " + valueType.clazz().getName());
     }
 
     @Override
     public void toJson(M o, JsonWriter writer) {
         writer.writeLBrace();
-        o.forEach((k, v) -> {
-            if (k instanceof String key)
+        var first = true;
+        for (var e : o.entrySet()) {
+            if (first)
+                first = false;
+            else
+                writer.writeComma();
+            if (e.getKey() instanceof String key)
                 writer.writeString(key);
             else
                 throw new IllegalArgumentException("Map keys must be strings");
             writer.writeColon();
-            writer.writeObjectOrNull(v, valueAdapter);
-        });
+            writer.writeObjectOrNull(e.getValue(), valueAdapter);
+        }
         writer.writeRBrace();
     }
 

@@ -24,11 +24,8 @@ public class AdapterGeneratorTest extends TestCase {
 //        var cls = ElementFactory.instance.buildClass(User.class);
 //        log.debug("\n{}", cls);
         var clazz = ElementFactory.instance.buildClass(User.class);
-        var gen = createGenerator(clazz);
-        var code = gen.generate();
+        var code = generate(clazz);
         log.info("\n{}", code);
-        var path = "/Users/leen/workspace/jsonk/src/test/java/org/jsonk/mocks/UserAdapter.java";
-        Files.writeString(Path.of(path), code);
     }
 
     @SneakyThrows
@@ -36,32 +33,22 @@ public class AdapterGeneratorTest extends TestCase {
 //        var cls = ElementFactory.instance.buildClass(User.class);
 //        log.debug("\n{}", cls);
         var clazz = ElementFactory.instance.buildClass(Role.class);
-        var gen = createGenerator(clazz);
-        var code = gen.generate();
+        var code = generate(clazz);
         log.info("\n{}", code);
-        var path = "/Users/leen/workspace/jsonk/src/test/java/org/jsonk/mocks/RoleAdapter.java";
-        Files.writeString(Path.of(path), code);
     }
 
     @SneakyThrows
     public void testListField() {
-        var code1 = createGenerator(ElementFactory.instance.buildClass(Order.class)).generate();
-        var code2 = createGenerator(ElementFactory.instance.buildClass(OrderItem.class)).generate();
+        var code1 = generate(ElementFactory.instance.buildClass(Order.class));
+        var code2 = generate(ElementFactory.instance.buildClass(OrderItem.class));
         log.info("\n{}", code1);
         log.info("\n{}", code2);
-        var path1 = "/Users/leen/workspace/jsonk/src/test/java/org/jsonk/mocks/OrderAdapter.java";
-        var path2 = "/Users/leen/workspace/jsonk/src/test/java/org/jsonk/mocks/OrderItemAdapter.java";
-        Files.writeString(Path.of(path1), code1);
-        Files.writeString(Path.of(path2), code2);
     }
 
     @SneakyThrows
     public void testPolymorphic() {
-        var gen = createGenerator(ElementFactory.instance.buildClass(Type.class));
-        var code1 = gen.generate();
+        var code1 = generate(ElementFactory.instance.buildClass(Type.class));
         logCode(code1);
-        var path = "/Users/leen/workspace/jsonk/src/test/java/org/jsonk/mocks/TypeAdapter.java";
-        Files.writeString(Path.of(path), code1);
         generate(ClassType.class);
         generate(ArrayType.class);
         generate(PrimitiveType.class);
@@ -98,26 +85,36 @@ public class AdapterGeneratorTest extends TestCase {
 
     @SneakyThrows
     private String generateWithoutSave(Class<?> clazz) {
-        var code = createGenerator(ElementFactory.instance.buildClass(clazz)).generate();
+        var code = generate(ElementFactory.instance.buildClass(clazz));
         log.info("\n{}", code);
         return code;
     }
 
     @SneakyThrows
     private void generate(Class<?> clazz) {
-        var code = createGenerator(ElementFactory.instance.buildClass(clazz)).generate();
-        var path = "/Users/leen/workspace/jsonk/src/test/java/" + clazz.getName().replace('.', '/') + "Adapter.java";
-        Files.writeString(Path.of(path), code);
+        var code = generate(ElementFactory.instance.buildClass(clazz));
+        log.info("\n{}", code);
+//        var path = "/Users/leen/workspace/jsonk/src/test/java/" + clazz.getName().replace('.', '/') + "Adapter.java";
+//        Files.writeString(Path.of(path), code);
     }
 
     private void logCode(String code) {
         log.info("\n{}", code);
     }
 
+    @SneakyThrows
+    private String generate(TypeElement clazz) {
+        var gen = createGenerator(clazz);
+        var code = gen.generate();
+//        var path1 = "/Users/leen/workspace/jsonk/src/test/java/" + clazz.getQualifiedName().toString().replace('.', '/') + "Adapter.java";
+//        Files.writeString(Path.of(path1), code);
+        return code;
+    }
+
     private AdapterGenerator createGenerator(TypeElement clazz) {
         var env = new Env();
 
-        var commonNames = new CommonNames(MockElements.instance);
+        var commonNames = new MyNames(MockElements.instance);
         var typeExt = new TypesExt(commonNames);
         return new AdapterGenerator(
                 clazz,

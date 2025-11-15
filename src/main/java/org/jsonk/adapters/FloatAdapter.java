@@ -5,7 +5,7 @@ import org.jsonk.Type;
 
 public class FloatAdapter implements Adapter<Float> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
         
     }
 

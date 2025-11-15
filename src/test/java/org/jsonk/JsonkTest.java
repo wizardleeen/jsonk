@@ -20,7 +20,6 @@ public class JsonkTest extends TestCase {
     public void test() {
         var register = AdapterRegistry.instance;
         register.addAdapter(new UserAdapter());
-        register.initAdapters();
         var user = new User(
                 "leen",
                 UserKind.CUSTOMER,
@@ -44,9 +43,7 @@ public class JsonkTest extends TestCase {
 
     public void testListField() {
         var registry = AdapterRegistry.instance;
-        registry.addAdapter(new OrderAdapter());
-        registry.addAdapter(new OrderItemAdapter());
-        registry.initAdapters();
+        registry.addAdapter(new OrderAdapter(), new OrderItemAdapter());
         var order = new Order(List.of(
                 new OrderItem("001", 1, 100),
                 new OrderItem("001", 1, 100),
@@ -60,9 +57,7 @@ public class JsonkTest extends TestCase {
 
     public void testLargeJson() {
         var registry = AdapterRegistry.instance;
-        registry.addAdapter(new OrderAdapter());
-        registry.addAdapter(new OrderItemAdapter());
-        registry.initAdapters();
+        registry.addAdapter(new OrderAdapter(), new OrderItemAdapter());
         var items = new ArrayList<OrderItem>();
         for (int i = 0; i < 1000; i++) {
             items.add(new OrderItem("001", 1, 100));
@@ -76,11 +71,7 @@ public class JsonkTest extends TestCase {
 
     public void testPolymorphism() {
         var registry = AdapterRegistry.instance;
-        registry.addAdapter(new TypeAdapter());
-        registry.addAdapter(new ClassTypeAdapter());
-        registry.addAdapter(new PrimitiveTypeAdapter());
-        registry.addAdapter(new ArrayTypeAdapter());
-        registry.initAdapters();
+        registry.addAdapter(new TypeAdapter(), new ClassTypeAdapter(), new PrimitiveTypeAdapter(), new ArrayTypeAdapter());
         var arrayType = new ArrayType(new ClassType("Foo"));
         var json = Jsonk.toJson(arrayType);
         assertEquals(arrayType, Jsonk.fromJson(json, org.jsonk.mocks.Type.class));
@@ -95,11 +86,7 @@ public class JsonkTest extends TestCase {
 
     public void testExistingDiscriminator() {
         var registry = AdapterRegistry.instance;
-        registry.addAdapter(new TypeAdapter());
-        registry.addAdapter(new PrimitiveTypeAdapter());
-        registry.addAdapter(new ClassTypeAdapter());
-        registry.addAdapter(new ArrayTypeAdapter());
-        registry.initAdapters();
+        registry.addAdapter(new TypeAdapter(), new PrimitiveTypeAdapter(), new ClassTypeAdapter(), new ArrayTypeAdapter());
         var json = Jsonk.toJson(new ClassType("Foo"), Option.create().indent());
         log.info("\n{}", json);
         assertEquals(json.indexOf("type"), json.lastIndexOf("type"));
@@ -108,7 +95,6 @@ public class JsonkTest extends TestCase {
     public void testInheritance() {
         var registry = AdapterRegistry.instance;
         registry.addAdapter(new ProductAdapter());
-        registry.initAdapters();
         var product = new Product("Shoes", 100);
         product.setStock(100);
         var json = Jsonk.toJson(product);
@@ -119,9 +105,7 @@ public class JsonkTest extends TestCase {
 
     public void testPrettyPrinting() {
         var registry = AdapterRegistry.instance;
-        registry.addAdapter(new OrderAdapter());
-        registry.addAdapter(new OrderItemAdapter());
-        registry.initAdapters();
+        registry.addAdapter(new OrderAdapter(), new OrderItemAdapter());
         var order = new Order(List.of(
                 new OrderItem("001", 1, 100)
         ));
@@ -142,19 +126,30 @@ public class JsonkTest extends TestCase {
     }
 
     public void testMap() {
-        var json = """
-                {
-                    "name": "Jsonk"
-                }
-                """;
-        var map = Jsonk.fromJson(json, Map.class);
-        assertEquals(Map.of("name", "Jsonk"), map);
+        var map = Map.of(
+                "name", "Jsonk",
+                "version", "0.0.2"
+        );
+        var json = Jsonk.toJson(map);
+        var map1 = Jsonk.fromJson(json, Map.class);
+        assertEquals(map, map1);
+    }
+
+    public void testList() {
+        var list = List.of(1, 2, 3);
+        var json = Jsonk.toJson(list);
+        var list1 = Jsonk.fromJson(json, org.jsonk.Type.from(List.class, int.class));
+        assertEquals(list, list1);
+    }
+
+    public void testLong() {
+        var v = Jsonk.fromJson(Long.MAX_VALUE + "", Object.class);
+        assertEquals(Long.MAX_VALUE, v);
     }
 
     public void testLocalDateTime() {
         var registry = AdapterRegistry.instance;
         registry.addAdapter(new LocalDateTimeFooAdapter());
-        registry.initAdapters();
         var foo = new LocalDateTimeFoo(
                 LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
                 LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
@@ -168,7 +163,6 @@ public class JsonkTest extends TestCase {
     public void testArray() {
         var registry = AdapterRegistry.instance;
         registry.addAdapter(new ArrayFooAdapter());
-        registry.initAdapters();
         var foo = new ArrayFoo(new String[] {"t1", "t2", "t3"});
         var json = Jsonk.toJson(foo);
         var foo1 = Jsonk.fromJson(json, ArrayFoo.class);
@@ -187,9 +181,7 @@ public class JsonkTest extends TestCase {
 
     public void testNestedConstruction() {
         var reg = AdapterRegistry.instance;
-        reg.addAdapter(new MaterialAdapter());
-        reg.addAdapter(new BOMAdapter());
-        reg.initAdapters();
+        reg.addAdapter(new MaterialAdapter(), new BOMAdapter());
         var material = new Material("Steel");
         material.setAmount(1);
         var bom = new BOM(material);
@@ -211,6 +203,29 @@ public class JsonkTest extends TestCase {
         var json = Jsonk.toJson(list);
         var list1 = Jsonk.fromJson(json, org.jsonk.Type.from(List.class, Integer.class));
         assertEquals(list, list1);
+    }
+
+    public void testPrimitive() {
+        var v = Jsonk.fromJson("1", int.class);
+        assertEquals(1, (int) v);
+        var b = Jsonk.fromJson("false", boolean.class);
+        assertFalse(b);
+    }
+
+    public void testString() {
+        var s = Jsonk.fromJson("\"Jsonk\"", String.class);
+        assertEquals("Jsonk", s);
+    }
+
+    @SneakyThrows
+    public void testRaceCondition() {
+        var threads = new ArrayList<Thread>();
+        AdapterRegistry.instance.hashCode();
+        threads.add(Thread.startVirtualThread(() -> Jsonk.fromJson("[]", List.class)));
+        threads.add(Thread.startVirtualThread(() -> Jsonk.fromJson("{}", Map.class)));
+        for (Thread thread : threads) {
+            thread.join();
+        }
     }
 
     private void register(Adapter<?>...adapters) {

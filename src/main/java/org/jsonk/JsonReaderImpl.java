@@ -786,12 +786,28 @@ class JsonReaderImpl implements JsonReader, Closeable {
         }
         if (!isDigit(buf[i]))
             throw parseException("Expected digit but found: " + current());
-        var v = 0L;
-        do {
-            v = v - (buf[i++] - '0');
-        } while (isDigit(buf[i]));
+        var min = Long.MIN_VALUE;
+        var multmin = min / 10;
+        long v = '0' - buf[i++];
         var isFloat = false;
+        while (isDigit(buf[i])) {
+            if (v >= multmin) {
+                v *= 10;
+                var d = buf[i] - '0';
+                if (v >= min + d) {
+                    i++;
+                    v -= d;
+                    continue;
+                }
+            }
+            do {
+                i++;
+            } while (isDigit(buf[i]));
+            isFloat = true;
+            break;
+        }
         if (buf[i] == '.') {
+            i++;
             isFloat = true;
             if (!isDigit(buf[i]))
                 throw parseException("Expected digit after decimal point but found: " + buf[i]);
@@ -804,8 +820,11 @@ class JsonReaderImpl implements JsonReader, Closeable {
             i++;
             if (buf[i] == '-')
                 i++;
-            while (isDigit(buf[i]))
+            if (!isDigit(buf[i]))
+                throw parseException("Expected digit in exponent but found: " + buf[i]);
+            do {
                 i++;
+            } while (isDigit(buf[i]));
         }
         offset = i;
         if (isFloat)

@@ -23,20 +23,20 @@ class AdapterGenerator extends AbstractGenerator {
     private final Types types;
     private final TypesExt typesExt;
     private final Introspects introspects;
-    private final CommonNames commonNames;
+    private final MyNames myNames;
     private final Annotations annotations;
     private final Env env;
     private final Map<AdapterKey, String> adapters = new HashMap<>();
     private PerfectHashTable mphConfig;
     private final Map<String, String> charsFields = new HashMap<>();
 
-    public AdapterGenerator(TypeElement clazz, Elements elements, Types types, TypesExt typesExt, Introspects introspects, CommonNames commonNames, Annotations annotations, Env env) {
+    public AdapterGenerator(TypeElement clazz, Elements elements, Types types, TypesExt typesExt, Introspects introspects, MyNames myNames, Annotations annotations, Env env) {
         this.clazz = clazz;
         this.elements = elements;
         this.types = types;
         this.typesExt = typesExt;
         this.introspects = introspects;
-        this.commonNames = commonNames;
+        this.myNames = myNames;
         this.annotations = annotations;
         this.env = env;
     }
@@ -192,7 +192,7 @@ class AdapterGenerator extends AbstractGenerator {
 
     private void generateInit(Clazz clazz) {
         writeln("@Override");
-        writeln("public void init(AdapterRegistry registry) {");
+        writeln("public void init(AdapterEnv env) {");
         indent();
         clazz.forEachReferenceType((t, attrs) -> {
             var adapterName = getAdapterName(t, attrs);
@@ -200,9 +200,9 @@ class AdapterGenerator extends AbstractGenerator {
                 () -> write(adapterName),
                 () -> {
                     if (t.isParameterized() || t instanceof TypeVariable)
-                        write("(Adapter) ").write("registry.getAdapter(").write(getTypeString(t));
+                        write("(Adapter) ").write("env.getAdapter(").write(getTypeString(t));
                     else
-                        write("registry.getAdapter(").write(t.getErasedText()).write(".class");
+                        write("env.getAdapter(").write(t.getErasedText()).write(".class");
                     if (!attrs.isEmpty())
                         write(", ").writeAttributes(attrs);
                     write(")");
@@ -302,7 +302,7 @@ class AdapterGenerator extends AbstractGenerator {
         writeln("import org.jsonk.Adapter;");
         writeln("import org.jsonk.Type;");
         writeln("import org.jsonk.AdapterKey;");
-        writeln("import org.jsonk.AdapterRegistry;");
+        writeln("import org.jsonk.AdapterEnv;");
         writeln();
     }
 
@@ -601,7 +601,7 @@ class AdapterGenerator extends AbstractGenerator {
                 var cl = (TypeElement) dt.asElement();
                 if (cl.getKind() == ElementKind.ENUM)
                     write("writer.writeString(").write(value).writeln(".name());");
-                else if (cl.getQualifiedName() == commonNames.classString)
+                else if (cl.getQualifiedName() == myNames.classString)
                     write("writer.").write(nullable ? "writeStringOrNull(" : "writeString(").write(value).writeln(");");
                 else
                     write("writer.").write(getWriteMethod(type, nullable)).write("(")
@@ -657,7 +657,7 @@ class AdapterGenerator extends AbstractGenerator {
                 var cl = (TypeElement) dt.asElement();
                 if (cl.getKind() == ElementKind.ENUM)
                     write("reader.readNullable(() -> ").write(cl.getQualifiedName()).write(".valueOf(reader.readString()))");
-                else if (cl.getQualifiedName() == commonNames.classString)
+                else if (cl.getQualifiedName() == myNames.classString)
                     write("reader.readStringOrNull()");
                 else
                     write("reader.readObject(").writeAdapterFieldName(Type.from(type), attrs).write(")");

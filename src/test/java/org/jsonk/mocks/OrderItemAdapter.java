@@ -7,29 +7,27 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class OrderItemAdapter implements Adapter<org.jsonk.mocks.OrderItem> {
 
-    private Adapter<java.lang.String> adapter0;
     private static final char[][] keys = new char[][] {
         null,
-        new char[] {'p', 'r', 'i', 'c', 'e'},
         null,
         null,
         null,
+        new char[] {'p', 'r', 'o', 'd', 'u', 'c', 't', 'I', 'd'},
         null,
         new char[] {'q', 'u', 'a', 'n', 't', 'i', 't', 'y'},
-        new char[] {'p', 'r', 'o', 'd', 'u', 'c', 't', 'I', 'd'}};
-    private static final int[] ordinals = new int[] {-1, 2, -1, -1, -1, -1, 1, 0};
-    private static final long seed = -622385821379361571L;
+        new char[] {'p', 'r', 'i', 'c', 'e'}};
+    private static final int[] ordinals = new int[] {-1, -1, -1, -1, 0, -1, 1, 2};
+    private static final long seed = -2438569752504735364L;
     private static final char[] chars0 = new char[] {'"', 'p', 'r', 'o', 'd', 'u', 'c', 't', 'I', 'd', '"'};
     private static final char[] chars1 = new char[] {'"', 'q', 'u', 'a', 'n', 't', 'i', 't', 'y', '"'};
     private static final char[] chars2 = new char[] {'"', 'p', 'r', 'i', 'c', 'e', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.String.class);
+    public void init(AdapterEnv env) {
     }
 
     @Override

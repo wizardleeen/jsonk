@@ -4,7 +4,7 @@ import org.jsonk.*;
 
 public class IdAdapter implements Adapter<Id> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

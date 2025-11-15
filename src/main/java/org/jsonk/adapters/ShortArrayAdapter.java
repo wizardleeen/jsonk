@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class ShortArrayAdapter implements Adapter<short[]> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

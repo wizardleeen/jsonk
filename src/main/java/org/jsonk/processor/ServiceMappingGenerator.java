@@ -7,12 +7,12 @@ import java.util.Set;
 class ServiceMappingGenerator extends AbstractGenerator {
 
     private final Annotations annotations;
-    private final CommonNames commonNames;
+    private final MyNames myNames;
     private final TypesExt typesExt;
 
-    public ServiceMappingGenerator(Annotations annotations, CommonNames commonNames, TypesExt typesExt) {
+    public ServiceMappingGenerator(Annotations annotations, MyNames myNames, TypesExt typesExt) {
         this.annotations = annotations;
-        this.commonNames = commonNames;
+        this.myNames = myNames;
         this.typesExt = typesExt;
     }
 
@@ -21,8 +21,8 @@ class ServiceMappingGenerator extends AbstractGenerator {
         for (TypeElement cls : classes) {
             if (!cls.getTypeParameters().isEmpty())
                 continue;
-            var adapter = annotations.getAdapter(annotations.getAnnotation(cls, commonNames.classJson));
-            var adapterName = adapter == null || typesExt.getClassName(adapter).equals(commonNames.classAdapter)?
+            var adapter = annotations.getAdapter(annotations.getAnnotation(cls, myNames.classJson));
+            var adapterName = adapter == null || typesExt.getClassName(adapter).equals(myNames.classAdapter)?
                 cls.getQualifiedName().toString() + "Adapter" : typesExt.getClassName(adapter).toString();
             if (!existing.contains(adapterName))
                 writeln(adapterName);

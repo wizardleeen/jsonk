@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class FloatArrayAdapter implements Adapter<float[]> {
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

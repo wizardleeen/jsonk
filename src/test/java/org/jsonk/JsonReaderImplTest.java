@@ -8,6 +8,7 @@ import org.jsonk.util.StringUtil;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 @Slf4j
 public class JsonReaderImplTest extends TestCase {
@@ -134,7 +135,19 @@ public class JsonReaderImplTest extends TestCase {
         assertEquals(-1, nameIndex);
     }
 
-    private JsonReader createReader(String text) {
+    public void testReadNumber() {
+        assertEquals(Long.MAX_VALUE, read(Long.MAX_VALUE + "", JsonReaderImpl::readNumber));
+        assertEquals(Long.MIN_VALUE, read(Long.MIN_VALUE + "", JsonReaderImpl::readNumber));
+        assertEquals(3.1415927, read("3.1415927", JsonReaderImpl::readNumber));
+    }
+
+    private <T> T read(String text, Function<JsonReaderImpl, T> read) {
+        try (var r = createReader(text)) {
+            return read.apply(r);
+        }
+    }
+
+    private JsonReaderImpl createReader(String text) {
         return new JsonReaderImpl(new StringReader(text));
     }
 

@@ -7,17 +7,17 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class RoleAdapter implements Adapter<org.jsonk.mocks.Role> {
 
     private static final char[][] keys = new char[][] {
         null};
     private static final int[] ordinals = new int[] {-1};
-    private static final long seed = -9001394272639965909L;
+    private static final long seed = 3952059428146633563L;
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
     }
 
     @Override

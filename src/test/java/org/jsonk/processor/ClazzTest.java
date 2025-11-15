@@ -12,7 +12,7 @@ public class ClazzTest extends TestCase {
     public void test() {
         var cls = ElementFactory.instance.buildClass(User.class);
         var elements = MockElements.instance;
-        var commonNames = new CommonNames(elements);
+        var commonNames = new MyNames(elements);
         var typeExt = new TypesExt(commonNames);
         var introspects = new Introspects(
                 new Annotations(commonNames, typeExt),

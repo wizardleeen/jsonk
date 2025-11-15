@@ -15,7 +15,7 @@ public class LocalDateAdapter implements Adapter<LocalDate>  {
     }
 
     @Override
-    public void init(AdapterRegistry registry) {
+    public void init(AdapterEnv env) {
 
     }
 

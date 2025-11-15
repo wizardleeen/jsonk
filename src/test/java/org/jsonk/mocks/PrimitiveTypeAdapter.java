@@ -7,23 +7,21 @@ import org.jsonk.JsonReader;
 import org.jsonk.Adapter;
 import org.jsonk.Type;
 import org.jsonk.AdapterKey;
-import org.jsonk.AdapterRegistry;
+import org.jsonk.AdapterEnv;
 
 public class PrimitiveTypeAdapter implements Adapter<org.jsonk.mocks.PrimitiveType> {
 
-    private Adapter<java.lang.String> adapter0;
     private static final char[][] keys = new char[][] {
         null,
         new char[] {'k', 'i', 'n', 'd'}};
     private static final int[] ordinals = new int[] {-1, 0};
-    private static final long seed = 4323861132194585665L;
+    private static final long seed = -4806432020730897033L;
     private static final char[] chars0 = new char[] {'"', 't', 'y', 'p', 'e', '"'};
     private static final char[] chars1 = new char[] {'"', 'p', 'r', 'i', 'm', 'i', 't', 'i', 'v', 'e', '"'};
     private static final char[] chars2 = new char[] {'"', 'k', 'i', 'n', 'd', '"'};
 
     @Override
-    public void init(AdapterRegistry registry) {
-        adapter0 = registry.getAdapter(java.lang.String.class);
+    public void init(AdapterEnv env) {
     }
 
     @Override
